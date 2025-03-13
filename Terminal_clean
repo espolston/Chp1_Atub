@@ -10,26 +10,32 @@ bcftools view -h /project/kreiner/pairedenv_commongarden/commongarden_allfiltsnp
 vim /scratch/midway3/espolston/header.txt
 #i > edit Number = R w/ AD and Number = A w/ AO and Number = A w/ QA to Number =. > esc > :wq
 
-#Got same error so seeing if i need to fix the drought file
+#Got same error- fixing the drought header
 conda activate /project/kreiner/espolston
 bcftools view -h /scratch/midway3/espolston/merged.vcf > /scratch/midway3/espolston/header_drought.txt
 vim /scratch/midway3/espolston/header_drought.txt
 #i > edit Number = R w/ AD and Number = A w/ AO and Number = A w/ QA to Number =. > esc > :wq
 
-#reheader, bgzip and index new files
-sbatch ./fix.sbatch
-
-##Run merge of drought and common garden exps vcfs (job name = drought_common)
-sbatch ./1_merged.sbatch
-
 #Downloaded pheno info from spreadsheets
-#/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/Common_Garden_Seq_Stats-more_meta.tsv
+  #/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/Common_Garden_Seq_Stats-more_meta.tsv
 
-##Edit fam file and run CMH on both merged and only common garden (job name = drought_common_plink)
-sbatch ./2_cmhscan.sbatch
+#Ran these before finding duplicate sites
+  #reheader, bgzip and index new files
+  sbatch ./fix.sbatch
+  ##Run merge of drought and common garden exps vcfs (job name = drought_common)
+  sbatch ./1_merged.sbatch
+  ##Edit fam file and run CMH on both merged and only common garden (job name = drought_common_plink)
+  sbatch ./2_cmhscan.sbatch
+
+#After finding duplicate sites, ran these
+sbatch ./duplicate.sbatch
+sbatch ./plink.sbatch #calls remdup.R but cant get Rscript to run in cluster
 
 #Downloaded fam and cmh scan files to look into scan results 
 "/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Code/3_cmhresults.Rmd"
+
+
+#Below may not be used 
 
 #Search for PPO
 grep -e Protoporphyrinogen -e PPO /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/dcg_bedtools.txt /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/cg_bedtools.txt > /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/PPO_grep.txt
@@ -42,4 +48,13 @@ grep -e Protoporphyrinogen -e PPO /Users/libbypolston/Desktop/UChicago/Kreiner_l
 sbatch ./4_selection.sbatch
 
 #In process of moving files to .vcf.gz and cmh files to /cds3/kreiner/newgenome_merged
+
+
+
+
+#Found duplicated sites in cmh file
+#Went on to server and checked .bim file
+bim <- fread("/scratch/midway3/espolston/binary_commongarden.bim")
+dup <- duplicated(bim$V4)
+dup_t <- which(dup == T)
 
