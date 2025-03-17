@@ -27,6 +27,10 @@ sbatch ./duplicate.sbatch
 "/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Code/3_cmhresults.Rmd"
 
 
+
+#Moved vcf.gz and cmh files into /cds3/kreiner/newgenome_merged
+
+
 #Below may not be used 
 #Ran these before finding duplicate sites
   #reheader, bgzip and index new files
