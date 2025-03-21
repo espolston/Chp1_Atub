@@ -24,6 +24,7 @@ sbatch ./plink.sbatch #calls remdup.R but cant get Rscript to run in cluster
 sbatch ./duplicate.sbatch
 
 #Downloaded fam and cmh scan files to look into scan results 
+#R version 4.4.3 Rstudio Version 2024.12.1+563 (2024.12.1+563
 "/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Code/3_cmhresults.Rmd"
 
 #Make ID files for clumping analysis and then upload to server and run clumping file
