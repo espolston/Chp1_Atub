@@ -26,6 +26,14 @@ sbatch ./duplicate.sbatch
 #Downloaded fam and cmh scan files to look into scan results 
 "/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Code/3_cmhresults.Rmd"
 
+#Make ID files for clumping analysis and then upload to server and run clumping file
+#Make ID files
+awk 'NR <= 1 {print "CHR\tID\tBP\tA1\tMAF\tA2\tFDR_p"; next} {OFS="\t"; split($1, array, "_"); $15 = array[2]; $16 = $15 ":" $3; print $15,$16,$3,$4,$5,$6,$13}' /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/FDRcmh_cg > /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/FDRcmh_cg_ID.txt
+awk 'NR <= 1 {print "CHR\tID\tBP\tA1\tMAF\tA2\tFDR_p"; next} {OFS="\t"; split($1, array, "_"); $15 = array[2]; $16 = $15 ":" $3; print $15,$16,$3,$4,$5,$6,$13}' /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/FDRcmh_dcg > /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/FDRcmh_dcg_ID.txt
+#upload
+sbatch ./clump.sbatch
+
+
 
 
 #Moved vcf.gz and cmh files into /cds3/kreiner/newgenome_merged
