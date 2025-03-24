@@ -21,7 +21,9 @@ vim /scratch/midway3/espolston/header_drought.txt
 
 #After finding duplicate sites, ran these
 sbatch ./plink.sbatch #calls remdup.R but cant get Rscript to run in cluster
-sbatch ./duplicate.sbatch
+sbatch ./duplicate.sbatch #run after plink bc need ids to remove the duplicates
+#fixed_.. vcfs = reheadered 
+#final_.. vcfs = duplicates removed
 
 #Downloaded fam and cmh scan files to look into scan results 
 #R version 4.4.3 Rstudio Version 2024.12.1+563 (2024.12.1+563)
