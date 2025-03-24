@@ -37,7 +37,8 @@ awk 'NR <= 1 {print "CHR\tID\tBP\tA1\tMAF\tA2\tFDR_p"; next} {OFS="\t"; split($1
 #upload
 sbatch ./clump.sbatch
 
-
+#Finding signatures of sweeps
+sbatch ./sweep.sbatch #USES MAKE_FOUNDERS BC NONFOUNDERS DIDNT WORK
 
 
 #Moved vcf.gz and cmh files into /cds3/kreiner/newgenome_merged
