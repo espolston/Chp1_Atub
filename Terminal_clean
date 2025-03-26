@@ -16,6 +16,9 @@ bcftools view -h /scratch/midway3/espolston/merged.vcf > /scratch/midway3/espols
 vim /scratch/midway3/espolston/header_drought.txt
 #i > edit Number = R w/ AD and Number = A w/ AO and Number = A w/ QA to Number =. > esc > :wq
 
+#reheader, bgzip and index new files
+sbatch ./fix.sbatch
+
 #Downloaded pheno info from spreadsheets
   #/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/Common_Garden_Seq_Stats-more_meta.tsv
 
@@ -23,6 +26,7 @@ vim /scratch/midway3/espolston/header_drought.txt
 sbatch ./plink.sbatch #calls remdup.R but cant get Rscript to run in cluster
 sbatch ./duplicate.sbatch #run after plink bc need ids to remove the duplicates
 #fixed_.. vcfs = reheadered 
+#fixed_..ID vcfs = reheadered still have duplicates (removed in plink) but have ID updated
 #final_.. vcfs = duplicates removed
 
 #Make ID files for clumping analysis and then upload to server and run clumping file
@@ -54,8 +58,6 @@ sbatch ./sweep.sbatch #USES MAKE_FOUNDERS BC NONFOUNDERS DIDNT WORK
 
 #Below may not be used 
 #Ran these before finding duplicate sites
-  #reheader, bgzip and index new files
-  sbatch ./fix.sbatch
   ##Run merge of drought and common garden exps vcfs (job name = drought_common)
   sbatch ./1_merged.sbatch
   ##Edit fam file and run CMH on both merged and only common garden (job name = drought_common_plink)
