@@ -37,7 +37,7 @@ awk 'NR <= 1 {print "CHR\tID\tBP\tA1\tMAF\tA2\tFDR_p"; next} {OFS="\t"; split($1
 sbatch ./clump.sbatch
 
 #Finding signatures of sweeps
-sbatch ./sweep.sbatch #USES MAKE_FOUNDERS BC NONFOUNDERS DIDNT WORK
+sbatch ./sweep.sbatch #USES MAKE_FOUNDERS
 
 #Downloaded cmh, clump, and ld files to look into scan results 
 #R version 4.4.3 Rstudio Version 2024.12.1+563 (2024.12.1+563)
