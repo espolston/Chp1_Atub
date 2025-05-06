@@ -20,6 +20,7 @@ vim /scratch/midway3/espolston/header_drought.txt
 sbatch ./fix.sbatch
 
 #Downloaded pheno info from spreadsheets
+  #all in common garden spreadsheet https://docs.google.com/spreadsheets/d/1N8CIjKGS3ot9BEnbHgPDtnJTC4saPhUkZ1zZi0ecWc8/edit?gid=1597318055#gid=1597318055
   #/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/Common_Garden_Seq_Stats-more_meta.tsv
 
 #After finding duplicate sites, ran these
@@ -28,6 +29,9 @@ sbatch ./duplicate.sbatch #run after plink bc need ids to remove the duplicates
 #fixed_.. vcfs = reheadered 
 #fixed_..ID vcfs = reheadered still have duplicates (removed in plink) but have ID updated
 #final_.. vcfs = duplicates removed
+
+#Also ran just drought cmh scan
+sbatch ./drought.sbatch
 
 #Make ID files for clumping analysis and then upload to server and run clumping file
 #Make ID files
