@@ -49,6 +49,8 @@ sbatch ./sweep.sbatch #USES MAKE_FOUNDERS
 "/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Code/3_cmhresults.Rmd"
 
 
+#pixy 
+#https://pixy.readthedocs.io/en/latest/index.html
 
 
 
