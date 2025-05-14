@@ -51,7 +51,7 @@ sbatch ./sweep.sbatch #USES MAKE_FOUNDERS
 
 #pixy 
 #https://pixy.readthedocs.io/en/latest/index.html
-
+#pixy.sbatch makes pop, sites files (pixy_pop.pl) and then runs pixy 
 
 
 
