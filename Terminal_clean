@@ -1,3 +1,6 @@
+#Need to rerun dcg things with new variant vcf: /project/kreiner/pairedenv_commongarden/normalized_SNPsonly_vcfs/drought_commongarden_merged_normalized_filtsnps_nomiss30p.vcf.gz
+#Julia normalized and filtered on missingness
+
 ##Gzip and index drought vcf before running on slurm
 module load htslib
 bgzip -c /cds3/kreiner/drought/raw/merged.vcf > /scratch/midway3/espolston/merged.vcf.gz
