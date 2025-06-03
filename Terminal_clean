@@ -3,6 +3,8 @@ module load htslib
 bgzip -c /cds3/kreiner/drought/raw/merged.vcf > /scratch/midway3/espolston/merged.vcf.gz
 tabix -p vcf /scratch/midway3/espolston/merged.vcf.gz
 
+#had to change to this vcf with # instead of Scaffold_# /cds3/kreiner/drought/vcf_dont_touch/merged_numericChr.vcf.gz
+
 ##Removing errors with FORMAT/AD values
 # print the header
 conda activate /project/kreiner/espolston
