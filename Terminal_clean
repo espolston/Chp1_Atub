@@ -50,16 +50,20 @@ sbatch ./sweep.sbatch #USES MAKE_FOUNDERS
 #manhattan: https://totajuliusd.github.io/topr_manual/manhattan.html
 "/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Code/3_cmhresults.Rmd"
 
-##Need to rerun dcg things with new variant vcf: /project/kreiner/pairedenv_commongarden/normalized_SNPsonly_vcfs/drought_commongarden_merged_normalized_filtsnps_nomiss30p.vcf.gz
+##Needed to rerun dcg things with new variant vcf: /project/kreiner/pairedenv_commongarden/normalized_SNPsonly_vcfs/drought_commongarden_merged_normalized_filtsnps_nomiss30p.vcf.gz
 #Julia normalized, i used plink to filter on missingness
 sbatch ./dcgmiss.sbatch
 #then need to make filtered cmh fdr val file, add ids and run commands like in clump
 
-
 #pixy 
 #https://pixy.readthedocs.io/en/latest/index.html
-#pixy.sbatch makes pop, sites files (pixy_pop.pl) and then runs pixy 
+#Makes pop, sites files (pixy_pop.pl) and then runs pixy for ag/nat and then ag/nat for each pair and all scaffolds separately
+sh pix.sbatch 
+sh pixpar.sbatch 
 
+~/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Code/pixyrename.R #renames the files in each of the individual folders 
+
+sh pixyname.sh #renames each file in every separate pixy folder so that I can download them all
 
 
 
