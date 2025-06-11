@@ -64,7 +64,7 @@ sh pixpar.sbatch
 ~/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Code/pixyrename.R #renames the files in each of the individual folders 
 
 sh pixyname.sh #renames each file in every separate pixy folder so that I can download them all
-
+Pixy_output.R
 
 
 #Moved vcf.gz and cmh files into /cds3/kreiner/newgenome_merged
