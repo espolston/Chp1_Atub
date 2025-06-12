@@ -57,9 +57,8 @@ sbatch ./dcgmiss.sbatch
 
 #pixy 
 #https://pixy.readthedocs.io/en/latest/index.html
-#Makes pop, sites files (pixy_pop.pl) and then runs pixy for ag/nat and then ag/nat for each pair and all scaffolds separately
-sh pix.sbatch 
-sh pixpar.sbatch 
+sh pixy.sbatch #Makes pop, sites files (pixy_namepop.pl, 3_cmhresults.R) and then runs pixy for ag/nat all scaffolds separately
+sh pixpar.sbatch #makes pair pop files (pix_pair.pl) and runs all pairs and scaffolds separately
 
 ~/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Code/pixyrename.R #renames the files in each of the individual folders 
 
