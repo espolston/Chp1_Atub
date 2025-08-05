@@ -55,6 +55,9 @@ sbatch ./sweep.sbatch #USES MAKE_FOUNDERS
 sbatch ./dcgmiss.sbatch
 #then need to make filtered cmh fdr val file, add ids and run commands like in clump
 
+#New clumping based on p val and using different cutoffs
+sbatch ./clump_bon.sbatch
+
 #pixy 
 #https://pixy.readthedocs.io/en/latest/index.html
 sh pixy.sbatch #Makes pop, sites files (pixy_namepop.pl, 3_cmhresults.R) and then runs pixy for ag/nat all scaffolds separately
@@ -63,7 +66,7 @@ sh pixpar.sbatch #makes pair pop files (pix_pair.pl) and runs all pairs and scaf
 ~/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Code/pixyrename.R #renames the files in each of the individual folders 
 
 sh pixyname.sh #renames each file in every separate pixy folder so that I can download them all
-Pixy_output.R
+Pixy_output.R #filters to use only the clumped hits
 
 
 #Moved vcf.gz and cmh files into /cds3/kreiner/newgenome_merged
