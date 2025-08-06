@@ -64,7 +64,7 @@ sbatch ./clump_bon.sbatch
 #sh pixpar.sbatch #makes pair pop files (pix_pair.pl) and runs all pairs and scaffolds separately
 #above pixy were wrong bc used dcg not dcgf files
 sbatch pixfilt.sbatch
-
+sbatch pixsite.sbatch #just ag vs nat for sites, not windows
 ~/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Code/pixyrename.R #renames the files in each of the individual folders 
 
 sh pixyname.sh #renames each file in every separate pixy folder so that I can download them all
