@@ -66,6 +66,8 @@ sbatch ./clump_bon.sbatch
 sbatch pixfilt.sbatch
 sbatch pixsite.sbatch #just ag vs nat for sites, not windows
 ~/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Code/pixyrename.R #renames the files in each of the individual folders 
+#wanted overall pi and fst values, not just at sig sites
+sbatch pixforman10.sbatch #10 kb windows, also 100kb windows in pixforman100.sbatch
 
 sh pixyname.sh #renames each file in every separate pixy folder so that I can download them all
 Pixy_output.R #filters to use only the clumped hits
