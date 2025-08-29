@@ -72,8 +72,11 @@ sbatch pixforman10.sbatch #10 kb windows, also 100kb windows in pixforman100.sba
 sh pixyname.sh #renames each file in every separate pixy folder so that I can download them all
 Pixy_output.R #filters to use only the clumped hits
 
+#PCA and MDS
+~/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/pca_mds.sbatch
 
-#Moved vcf.gz and cmh files into /cds3/kreiner/newgenome_merged
+
+#Moved files into /cds3/kreiner/newgenome_merged
 
 
 
@@ -96,7 +99,7 @@ grep -e Protoporphyrinogen -e PPO /Users/libbypolston/Desktop/UChicago/Kreiner_l
 #signatures of selection on cluster
 sbatch ./4_selection.sbatch
 
-#In process of moving files to .vcf.gz and cmh files to /cds3/kreiner/newgenome_merged
+#All files stored in /cds3/kreiner/newgenome_merged
 
 
 
