@@ -1,3 +1,18 @@
+#Starting from snp calling
+#grenepipe: https://github.com/moiexpositoalonsolab/grenepipe/wiki
+sbatch snpcall.sbatch
+
+
+#rewrite below to make cleaner, set IDs in orginal vcf and then run everything from there
+
+#when I get to phasing remember i didnt set filters yet
+
+
+
+
+
+
+
 ##Gzip and index drought vcf before running on slurm
 module load htslib
 bgzip -c /cds3/kreiner/drought/raw/merged.vcf > /scratch/midway3/espolston/merged.vcf.gz
@@ -72,7 +87,7 @@ sbatch pixforman10.sbatch #10 kb windows, also 100kb windows in pixforman100.sba
 sh pixyname.sh #renames each file in every separate pixy folder so that I can download them all
 Pixy_output.R #filters to use only the clumped hits
 
-#PCA and MDS
+#PCA and MDS - original found 2 indiv to drop (Rozenn also dropped)
 ~/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/pca_mds.sbatch
 
 
