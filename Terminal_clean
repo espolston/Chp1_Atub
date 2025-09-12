@@ -1,5 +1,7 @@
 #Starting from snp calling
 #grenepipe: https://github.com/moiexpositoalonsolab/grenepipe/wiki
+#Table (pulled from other drought data table): https://docs.google.com/spreadsheets/d/1XtKHhJ41cyRA0_17Z7z6jSeaHlKDzKLPTSIv7kw8SG0/edit?gid=0#gid=0
+#~/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Code/sample_filefor_grenepipe.R
 sbatch snpcall.sbatch
 
 
