@@ -2,7 +2,21 @@
 #grenepipe: https://github.com/moiexpositoalonsolab/grenepipe/wiki
 #Table (pulled from other drought data table): https://docs.google.com/spreadsheets/d/1XtKHhJ41cyRA0_17Z7z6jSeaHlKDzKLPTSIv7kw8SG0/edit?gid=0#gid=0
 #~/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Code/sample_filefor_grenepipe.R
+#copying files from cds3: bams.sbatch
+
+#ran all scaffolds except 1-17 in grenepipe and then it was a nightmare
 sbatch snpcall.sbatch
+
+#for scaffolds 1-17 running freebayes
+python3 fasta_generate_regions.py Atub_193_hap2.fasta 100000 > 100kbregions
+#remove the scaffolds that are > 17 with R version 4.4.1 on server:
+~/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Code/regions_specific.R 
+sbatch ./1_runfreebayes_parallel_slurm.sh
+sbatch ./2_checkfailedfreebayes.sh
+sbatch ./3_rerunfailed_freebayes.sh
+
+#run filtering
+#merge and update drought indiv ids
 
 
 #rewrite below to make cleaner, set IDs in orginal vcf and then run everything from there
