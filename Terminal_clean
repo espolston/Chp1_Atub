@@ -11,6 +11,9 @@ sbatch snpcall.sbatch
 python3 fasta_generate_regions.py Atub_193_hap2.fasta 100000 > 100kbregions
 #remove the scaffolds that are > 17 with R version 4.4.1 on server:
 ~/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Code/regions_specific.R 
+#split into 32 region batches
+split -l 32 /scratch/midway3/espolston/100kbregions_scaf1_17.txt region_chunk_
+
 sbatch ./1_runfreebayes_parallel_slurm.sh
 sbatch ./2_checkfailedfreebayes.sh
 sbatch ./3_rerunfailed_freebayes.sh
