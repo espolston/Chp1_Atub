@@ -1,34 +1,68 @@
-#Starting from snp calling
-#grenepipe: https://github.com/moiexpositoalonsolab/grenepipe/wiki
-#Table (pulled from other drought data table): https://docs.google.com/spreadsheets/d/1XtKHhJ41cyRA0_17Z7z6jSeaHlKDzKLPTSIv7kw8SG0/edit?gid=0#gid=0
-#~/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Code/sample_filefor_grenepipe.R
-#copying files from cds3: bams.sbatch
+#Running gatk bc freebayes was taking so long
+#GATK - version 4.6.2
+#Run on each individual, on each region
+#Organize by region and put all individual's gvcf file for that region in there
 
-#ran all scaffolds except 1-17 in grenepipe and then it was a nightmare
-sbatch snpcall.sbatch
+#Download and install gatk
+#module load python/anaconda-2023.09
+#module load apptainer 
+#apptainer pull gatk_4.6.2.0.sif docker://broadinstitute/gatk:4.6.2.0
+#need to run gatk like this: apptainer exec gatk_4.6.2.0.sif gatk HaplotypeCaller
 
-#for scaffolds 1-17 running freebayes
+#Copy bams to scratch
+bams.sbatch
+
+#make regions file (bam name, renamed sample and 100 kb regions) "*_193_2.dd.bam"
+bams_samplenames.txt #2 indivs to remove have been (from metadata)
+#add duplicate marked bam extension to col 1 "*_193_2.sort.dd.bam" 
+awk '{OFS="\t"; $3 = $1"_193_2.dd.bam"; print $3,$2}' bam_samplenames.txt > bamsdone_samplenames.txt
+#make regions file
 #get fasta_generate_regions.py from https://github.com/freebayes/freebayes/blob/master/scripts/fasta_generate_regions.py 
 python3 fasta_generate_regions.py Atub_193_hap2.fasta 100000 > 100kbregions
+#repeat each bam for every 100kb region - file output is 100kbregions_wnames.txt
+~/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Code/make_gatkregions.R
 
-#remove the scaffolds that are > 17 with R version 4.4.1 on server:
-~/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Code/regions_specific.R 
-#split into 32 region batches
-split -l 32 /scratch/midway3/espolston/100kbregions_scaf1_17.txt region_chunk_
+#fixing regions to be 1 start for gatk
+awk '{OFS="\t"; split($1, part, ":"); $2=part[1]; $3=part[2]; split($3, region,"-"); $4=region[1]+1; $5=region[2]; $6=$2":"$4"-"$5; print $6}' /scratch/midway3/espolston/100kbregions > /scratch/midway3/espolston/final
+awk '{OFS="\t"; split($1, array, "."); $4=array[1]".dd.bam"; split($3, part, ":"); $5=part[1]; $6=part[2]; split($6, region,"-"); $7=region[1]+1; $8=region[2]; $9=$5":"$7"-"$8; print $4,$2,$9}' /scratch/midway3/espolston/100kbregions_wnames.txt > /scratch/midway3/espolston/test.txt
 
-#with memory issues, split 100kb regions from above into 10 kb regions for remaining files
-R ~/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Code/rewrite_100kb_to_10kb.R
+#Make sample only file
+awk '{OFS="\t"; print $1}' /scratch/midway3/espolston/bam_samplenames.txt > /scratch/midway3/espolston/bam_locations.txt
 
-sbatch ./1_runfreebayes_parallel_slurm.sh
-sbatch ./2_checkfailedfreebayes.sh
-sbatch ./3_rerunfailed_freebayes.sh
+#Make final sample names only file - DONE
+awk '{OFS="\t"; print $2}' /scratch/midway3/espolston/bam_samplenames.txt > /scratch/midway3/espolston/gvcf_names.txt
 
-#run filtering
-#merge and update drought indiv ids
+#From here following julia's tutorial: https://ubcforestrybioinformatics.github.io/pages/topic_7/topic_7/ 
+
+#create sequence dictionary
+apptainer exec /project/kreiner/espolston/gatk_4.6.2.0.sif gatk CreateSequenceDictionary \
+  -R /scratch/midway3/espolston/Atub_193_hap2.fasta \
+  -O /scratch/midway3/espolston/Atub_193_hap2.dict
+
+#check for duplicate reads -- ALREADY DONE, not using (checked w samtools stats BAMFILE)
+#mkdir -p /scratch/midway2/espolston/dup_log/
+#gatk_dup.sbatch
+  
+#run on indiv bam and renames drought samples
+gatk_indivvar.sbatch
+2_bamvariantcall.sh #creates failed regions file to start next run
+3_bamvariantcall.sbatch
+
+#make map file, database for gatk and get region specific vcf files
+gatk_gvcftovcf.sbatch
+2_gvcftovcf.sh
+3_gvcftovcf.sbatch
 
 
-#rewrite below to make cleaner, set IDs in orginal vcf and then run everything from there
 
+#Run these to filter and merge files- written for freebayes, not gatk so whichever i choose I need to clean them up
+1_snpfiltermove.sh
+2_snpfilterset.sbatch
+3_checkandfinish.sh
+
+
+
+#rewrite below to make cleaner
 #when I get to phasing remember i didnt set filters yet
 
 
