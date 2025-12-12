@@ -63,6 +63,6 @@ gatk_gvcftovcf.sbatch
 2_snpfilterset.sbatch
 3_checkandfinish.sh
 
-
+post_snpcalling.sh - copy into here once I get running
 
 #when I get to phasing remember i didnt set filters yet
