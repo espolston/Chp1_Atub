@@ -139,8 +139,10 @@ sh pixyname.sh #renames each file in every separate pixy folder so that I can do
 Pixy_output.R #filters to use only the clumped hits
 
 #PCA and MDS - original found 2 indiv to drop (Rozenn also dropped)
-~/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/pca_mds.sbatch
+~/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Code/pca_mds.sbatch
 
+#PCA on data with no missing data - done while running gatk to see if old vcf would actually be suitable
+dcgnomiss.sbatch
 
 #Moved files into /cds3/kreiner/newgenome_merged
 
@@ -167,9 +169,6 @@ sbatch ./4_selection.sbatch
 
 #All files stored in /cds3/kreiner/newgenome_merged
 
-
-
-
 #Found duplicated sites in cmh file
 #Went on to server and checked .bim file
 bim <- fread("/scratch/midway3/espolston/binary_commongarden.bim")
@@ -184,7 +183,7 @@ dup_t <- which(dup == T)
 
 
 
-#Starting from snp calling
+#Starting from snp calling with freebayes
 #grenepipe: https://github.com/moiexpositoalonsolab/grenepipe/wiki
 #Table (pulled from other drought data table): https://docs.google.com/spreadsheets/d/1XtKHhJ41cyRA0_17Z7z6jSeaHlKDzKLPTSIv7kw8SG0/edit?gid=0#gid=0
 #~/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Code/sample_filefor_grenepipe.R
