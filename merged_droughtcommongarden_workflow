@@ -1,0 +1,5 @@
+#Julia created merged files after including variant and invariant sites and normalizing
+#SNP vcf: /project/kreiner/pairedenv_commongarden/normalized_SNPsonly_vcfs/drought_commongarden_merged_normalized_filtsnps_nomiss30.vcf.gz
+#all sites vcf: /project/kreiner/pairedenv_commongarden/allsites/droughtcgmerged_allsites_filtered.vcf.gz
+
+#Will be using the same cutoffs for missingness and MAF in the SNP and all sites file
