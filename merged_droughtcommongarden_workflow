@@ -3,3 +3,8 @@
 #all sites vcf: /project/kreiner/pairedenv_commongarden/allsites/droughtcgmerged_allsites_filtered.vcf.gz
 
 #Will be using the same cutoffs for missingness and MAF in the SNP and all sites file
+
+#.05 missingness and MAF .01 filters
+#NEED TO DO THIS TOMORROW AND FIGURE OUT WHICH I ALSO NEED TO DO FOR ALLSITES FILE
+plink --vcf /project/kreiner/pairedenv_commongarden/normalized_SNPsonly_vcfs/drought_commongarden_merged_normalized_filtsnps_nomiss30.vcf.gz --geno .05 --recode vcf --allow-extra-chr --double-id --out /project/kreiner/pairedenv_commongarden/normalized_SNPsonly_vcfs/drought_commongarden_merged_normalized_filtsnps_plinkmiss05.vcf | gzip > /project/kreiner/pairedenv_commongarden/normalized_SNPsonly_vcfs/drought_commongarden_merged_normalized_filtsnps_plinkmiss05.vcf.gz
+bcftools filter -i 'AF >= 0.01 & AF <= 0.99' /project/kreiner/pairedenv_commongarden/normalized_SNPsonly_vcfs/drought_commongarden_merged_normalized_filtsnps_plinkmiss05.vcf
