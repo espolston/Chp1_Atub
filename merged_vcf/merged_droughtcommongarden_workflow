@@ -9,8 +9,8 @@
 vcf_processing.sbatch
 
 #if Remdup.R says no duplicates
-tabix -p vcf /scratch/midway3/espolston/vcf/droughtcgmerged_allsites_finalprocessed_ID.vcf.gz
-tabix -p vcf /scratch/midway3/espolston/vcf/drought_commongarden_merged_finalprocessed_ID.vcf.gz
+
+#Index and save copy
 cp /scratch/midway3/espolston/vcf/droughtcgmerged_allsites_finalprocessed_ID.vcf.gz /project/kreiner/pairedenv_commongarden/allsites/
 cp /scratch/midway3/espolston/vcf/droughtcgmerged_allsites_finalprocessed_ID.vcf.gz.tbi /project/kreiner/pairedenv_commongarden/allsites/
 cp /scratch/midway3/espolston/vcf/drought_commongarden_merged_finalprocessed_ID.vcf.gz  /project/kreiner/pairedenv_commongarden/normalized_SNPsonly_vcfs/
@@ -20,3 +20,11 @@ cp /scratch/midway3/espolston/vcf/drought_commongarden_merged_finalprocessed_ID.
 #From here use: 
 #Final SNP: /project/kreiner/pairedenv_commongarden/normalized_SNPsonly_vcfs/drought_commongarden_merged_finalclean_ID.vcf.gz
 #Final all sites: /project/kreiner/pairedenv_commongarden/allsites/droughtcgmerged_allsites_finalprocessed_ID.vcf.gz
+
+#Editing fam file
+perl /scratch/midway3/espolston/fam_edit.pl /scratch/midway2/espolston/binary_dcgm.fam /scratch/midway3/espolston/Chp1_DroughtandCommonGardenInfo_MergedMetaData.tsv /scratch/midway2/espolston/dcgm_final.fam 
+
+#Check relatedness
+IBD.sbatch
+
+#Investigate relatedness in Rstudio
