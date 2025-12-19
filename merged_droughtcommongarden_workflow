@@ -1,10 +1,23 @@
 #Julia created merged files after including variant and invariant sites and normalizing
-#SNP vcf: /project/kreiner/pairedenv_commongarden/normalized_SNPsonly_vcfs/drought_commongarden_merged_normalized_filtsnps_nomiss30.vcf.gz
-#all sites vcf: /project/kreiner/pairedenv_commongarden/allsites/droughtcgmerged_allsites_filtered.vcf.gz
+#unprocessed SNP vcf: /project/kreiner/pairedenv_commongarden/normalized_SNPsonly_vcfs/drought_commongarden_merged_normalized_filtsnps_nomiss30.vcf.gz
+#unprocessed all sites vcf, for pixy: /project/kreiner/pairedenv_commongarden/allsites/droughtcgmerged_allsites_filtered.vcf.gz
 
 #Will be using the same cutoffs for missingness and MAF in the SNP and all sites file
 
-#.05 missingness and MAF .01 filters
-#NEED TO DO THIS TOMORROW AND FIGURE OUT WHICH I ALSO NEED TO DO FOR ALLSITES FILE
-plink --vcf /project/kreiner/pairedenv_commongarden/normalized_SNPsonly_vcfs/drought_commongarden_merged_normalized_filtsnps_nomiss30.vcf.gz --geno .05 --recode vcf --allow-extra-chr --double-id --out /project/kreiner/pairedenv_commongarden/normalized_SNPsonly_vcfs/drought_commongarden_merged_normalized_filtsnps_plinkmiss05.vcf | gzip > /project/kreiner/pairedenv_commongarden/normalized_SNPsonly_vcfs/drought_commongarden_merged_normalized_filtsnps_plinkmiss05.vcf.gz
-bcftools filter -i 'AF >= 0.01 & AF <= 0.99' /project/kreiner/pairedenv_commongarden/normalized_SNPsonly_vcfs/drought_commongarden_merged_normalized_filtsnps_plinkmiss05.vcf
+#.05 missingness and MAF .01 filters (for variant file), remove 2 indivs (P16_Nat_1_T and P12_Nat_14_T), rename all drought P12 to P10 and check for duplicates
+#add ID to vcf as well
+plink --vcf /project/kreiner/pairedenv_commongarden/normalized_SNPsonly_vcfs/drought_commongarden_merged_normalized_filtsnps_nomiss30.vcf.gz --geno .05 --recode vcf --allow-extra-chr --double-id --remove ind_remove.txt --out /scratch/espolston/midway3/vcf/drought_commongarden_merged_normalized_filtsnps_plinkmiss05.vcf | gzip > /scratch/espolston/midway3/vcf/drought_commongarden_merged_normalized_filtsnps_plinkmiss05.vcf.gz
+bcftools filter -i 'AF >= 0.01 & AF <= 0.99' /scratch/espolston/midway3/vcf/drought_commongarden_merged_normalized_filtsnps_plinkmiss05.vcf.gz
+bcftools reheader --samples /scratch/midway3/espolston/vcf_reheader.txt -o /scratch/espolston/midway3/vcf/drought_commongarden_merged_normalized_filtsnps_miss05_rehead.vcf.gz /scratch/espolston/midway3/vcf/drought_commongarden_merged_normalized_filtsnps_plinkmiss05.vcf.gz
+awk '{OFS="\t"} /^#/ {print; next} {split($1, array, "_"); $3 = array[2] ":" $2; print}' /scratch/espolston/midway3/vcf/drought_commongarden_merged_normalized_filtsnps_miss05_rehead.vcf.gz > /project/kreiner/pairedenv_commongarden/normalized_SNPsonly_vcfs/drought_commongarden_merged_finalprocessed_ID.vcf.gz
+#DUPLICATE CHECK
+
+#.05 missingness, remove 2 indivs (P16_Nat_1_T and P10_Nat_14_T) and rename all drought P12 to P10
+plink --vcf /project/kreiner/pairedenv_commongarden/allsites/droughtcgmerged_allsites_filtered.vcf.gz --geno .05 --recode vcf --allow-extra-chr --double-id --remove ind_remove.txt --out /scratch/espolston/midway3/vcf/droughtcgmerged_allsites_filtered_.05miss.vcf | gzip > /scratch/espolston/midway3/vcf/droughtcgmerged_allsites_filtered_.05miss.vcf.gz
+bcftools reheader --samples /scratch/midway3/espolston/vcf_reheader.txt -o /scratch/espolston/midway3/vcf/droughtcgmerged_allsites_filtered_.05miss_rehead.vcf.gz /scratch/espolston/midway3/vcf/droughtcgmerged_allsites_filtered_.05miss.vcf.gz
+awk '{OFS="\t"} /^#/ {print; next} {split($1, array, "_"); $3 = array[2] ":" $2; print}' /scratch/espolston/midway3/vcf/droughtcgmerged_allsites_filtered_.05miss_rehead.vcf.gz > /scratch/espolston/midway3/vcf/droughtcgmerged_allsites_finalprocessed_ID.vcf.gz
+#DUPLICATE CHECK
+
+#From here use: 
+#Final SNP: /project/kreiner/pairedenv_commongarden/normalized_SNPsonly_vcfs/drought_commongarden_merged_finalclean_ID.vcf.gz
+#Final all sites: /scratch/espolston/midway3/vcf/droughtcgmerged_allsites_finalprocessed_ID.vcf.gz
