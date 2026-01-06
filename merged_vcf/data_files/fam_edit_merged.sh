@@ -38,32 +38,20 @@ my $pair_col = 2;
 
 while(my $ph_line = <B>){
 	chomp $ph_line;
+	#Dont actually need to skip first line here!
 	last unless $ph_line =~ /\S/;
-	#print $ph_line . "\n";
+	#print "line 42 " . $ph_line . "\n";
 	my @b = split(' ', $ph_line);
 	
 	if($b[0] ne "Sample"){
 		my $IID = $b[$iid_col];
-		my $sex = $b[$sex_col];
 		my $envir_code = $b[$env_col];
 		my $pair = $b[$pair_col];
-		my $envir_code = -9;
-		my $sex_code = 0;
+		my $sex_code = $b[$sex_col];
 		
-		#print "(iid, sex, envir, pair, envircode)" . $IID . "\t" . $sex . "\t" . $envir . "\t" . $pair . "\t" . $envir_code ."\n";
+		#print "line 52 (iid, sex, pair, envircode)" . $IID . "\t" . $sex_code . "\t" . $pair . "\t" . $envir_code ."\n";
 		
-		#removed envir to envir_code section because new pheno data not Ag and Nat
-		
-		if($sex eq "M"){
-			$sex_code = 1;
-		}elsif($sex eq "F"){
-			$sex_code = 2;
-		}elsif($sex eq "NA"){
-			$sex_code = 0;
-		}else{
-			print "sex codes not in correct format";
-			die "Pheno info line: (IID, sex, env, pair) " . $ph_line;
-		}
+		#removed envir to envir_code and sex to sex code section because new pheno data not Ag and Nat
 		
 		$indiv{$IID} = $sex_code . " " . $envir_code . " " . $pair;
 		#$dats{$IID} = $IID . " " . $IID . " " . $pair;  #FIDs in the first column, IIDs in the second column, and cluster names in the third column
@@ -85,6 +73,7 @@ open (C, ">", $output)
 #Open generic fam file and update sex and environment code based on pheno info file
 while(my $line = <A>){
 	chomp $line;
+	#print "line 87 " . $line . "\n";
 	my @a = split(/\s+/, $line);
 	my $col_1 = $a[0];
 	my $col_2 = $a[1];
