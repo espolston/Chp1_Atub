@@ -5,10 +5,8 @@
 #Will be using the same cutoffs for missingness and MAF in the SNP and all sites file
 
 #.05 missingness and MAF .01 filters (for variant file), remove 2 indivs (P16_Nat_1_T and P12_Nat_14_T), rename all drought P12 to P10, add ID
-#also does first plink to check for duplicates with Remdup.R
+#also creates binary, fam files and pca/mds
 vcf_processing.sbatch
-
-#if Remdup.R says no duplicates
 
 #Index and save copy
 cp /scratch/midway3/espolston/vcf/droughtcgmerged_allsites_finalprocessed_ID.vcf.gz /project/kreiner/pairedenv_commongarden/allsites/
