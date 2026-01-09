@@ -15,4 +15,6 @@ vcf_processing.sbatch
 
 #Check relatedness
 IBD.sbatch
-#dcgm_IBD.genome.gz downloaded
+#dcgm_IBD.genome.gz downloaded and analyzed in chp1_mergedvcf.Rmd
+
+
