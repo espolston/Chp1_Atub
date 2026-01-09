@@ -5,12 +5,14 @@
 #Will be using the same cutoffs for missingness and MAF in the SNP and all sites file
 
 #.05 missingness and MAF .01 filters (for variant file), remove 2 indivs (P16_Nat_1_T and P12_Nat_14_T), rename all drought P12 to P10, add ID
-#also checks for duplicate sites, creates binary, fam files and pca/mds
+#also checks for duplicate sites, creates binary, fam files and pca/mds and cmh scan
 vcf_processing.sbatch
 
 #From here use: 
 #Final SNP: /project/kreiner/pairedenv_commongarden/normalized_SNPsonly_vcfs/drought_commongarden_merged_finalprocessed_ID.vcf.gz
 #Final all sites: /project/kreiner/pairedenv_commongarden/allsites/droughtcgmerged_allsites_finalprocessed_ID.vcf.gz
+
+#downloaded dcgm_pca.eigenval, dcgm_pca.eigenvec, dcgm_mds.mds and ...
 
 #Check relatedness
 IBD.sbatch
