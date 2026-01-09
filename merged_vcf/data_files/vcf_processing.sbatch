@@ -68,7 +68,7 @@ plink --bfile /scratch/midway3/espolston/vcf/binary_dcgm --bim /scratch/midway3/
 
 plink --bfile /scratch/midway3/espolston/vcf/binary_dcgm --bim /scratch/midway3/espolston/vcf/binary_dcgm.bim --fam /scratch/midway3/espolston/vcf/dcgm.fam --mds-plot 20 --within /scratch/midway3/espolston/vcf/dcgm.fam --cluster --allow-no-sex --allow-extra-chr --make-founders --out /scratch/midway3/espolston/vcf/dcgm_mds
 
-plink --bfile /scratch/midway3/espolston/vcf/binary_dcgm --bim /scratch/midway3/espolston/vcf/binary_dcgm.bim --fam /scratch/midway2/espolston/dcgm.fam --mh --within /scratch/midway2/espolston/dcgm.fam --allow-extra-chr --allow-no-sex --nonfounders --out /scratch/midway3/espolston/vcf/dcgm_cmh
+plink --bfile /scratch/midway3/espolston/vcf/binary_dcgm --bim /scratch/midway3/espolston/vcf/binary_dcgm.bim --fam /scratch/midway2/espolston/vcf/dcgm.fam --mh --within /scratch/midway2/espolston/dcgm.fam --allow-extra-chr --allow-no-sex --nonfounders --out /scratch/midway3/espolston/vcf/dcgm_cmh
 
 #INVARIANT
 #.05 missingness, remove 2 indivs (P16_Nat_1_T and P10_Nat_14_T), rename all drought P12 to P10, add ID
