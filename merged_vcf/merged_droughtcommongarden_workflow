@@ -5,22 +5,12 @@
 #Will be using the same cutoffs for missingness and MAF in the SNP and all sites file
 
 #.05 missingness and MAF .01 filters (for variant file), remove 2 indivs (P16_Nat_1_T and P12_Nat_14_T), rename all drought P12 to P10, add ID
-#also creates binary, fam files and pca/mds
+#also checks for duplicate sites, creates binary, fam files and pca/mds
 vcf_processing.sbatch
 
-#Index and save copy
-cp /scratch/midway3/espolston/vcf/droughtcgmerged_allsites_finalprocessed_ID.vcf.gz /project/kreiner/pairedenv_commongarden/allsites/
-cp /scratch/midway3/espolston/vcf/droughtcgmerged_allsites_finalprocessed_ID.vcf.gz.tbi /project/kreiner/pairedenv_commongarden/allsites/
-cp /scratch/midway3/espolston/vcf/drought_commongarden_merged_finalprocessed_ID.vcf.gz  /project/kreiner/pairedenv_commongarden/normalized_SNPsonly_vcfs/
-cp /scratch/midway3/espolston/vcf/drought_commongarden_merged_finalprocessed_ID.vcf.gz.tbi  /project/kreiner/pairedenv_commongarden/normalized_SNPsonly_vcfs/
-
-
 #From here use: 
-#Final SNP: /project/kreiner/pairedenv_commongarden/normalized_SNPsonly_vcfs/drought_commongarden_merged_finalclean_ID.vcf.gz
+#Final SNP: /project/kreiner/pairedenv_commongarden/normalized_SNPsonly_vcfs/drought_commongarden_merged_finalprocessed_ID.vcf.gz
 #Final all sites: /project/kreiner/pairedenv_commongarden/allsites/droughtcgmerged_allsites_finalprocessed_ID.vcf.gz
-
-#Editing fam file
-perl /scratch/midway3/espolston/fam_edit.pl /scratch/midway2/espolston/binary_dcgm.fam /scratch/midway3/espolston/Chp1_DroughtandCommonGardenInfo_MergedMetaData.tsv /scratch/midway2/espolston/dcgm_final.fam 
 
 #Check relatedness
 IBD.sbatch
