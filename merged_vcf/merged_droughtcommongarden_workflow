@@ -18,6 +18,6 @@ IBD.sbatch
 #dcgm_IBD.genome.gz downloaded and analyzed in chp1_mergedvcf.Rmd
 #Removing 27 individuals based on rules: 1. remove both indivs in .95 pi_hat pair 2. remove all individuals that have more than one contrast with pi_hat > .2 (so 4828 was in a pair with 5102 and P17_Ag_21 so I removed 4828) 3. Then of the remaining, the contrasts that were from different pairs, I removed the one from the larger sample size population 4. For the last 10, I randomly chose which one to remove (with a rand num generator)
 
-#removes related individuals from vcf, runs plink and cmh scan
+#removes related individuals from snp and allsites vcf, runs plink and cmh scan
 afterIBD.sbatch
 
