@@ -30,7 +30,7 @@ cp /scratch/midway3/espolston/vcf/droughtcgmerged_allsites_final_ID_IBD.vcf.gz /
 cp /scratch/midway3/espolston/vcf/droughtcgmerged_allsites_final_ID_IBD.vcf.gz.tbi /project/kreiner/pairedenv_commongarden/allsites/
 
 #make binary files (overwrite ones that were made before)
-plink --vcf /project/kreiner/pairedenv_commongarden/normalized_SNPsonly_vcfs/drought_commongarden_merged_finalprocessed_ID.vcf.gz --allow-extra-chr --make-bed --double-id --out /scratch/midway3/espolston/vcf/binary_dcgm
+plink --vcf /project/kreiner/pairedenv_commongarden/normalized_SNPsonly_vcfs/drought_commongarden_merged_final_ID_IBD.vcf.gz --allow-extra-chr --make-bed --double-id --out /scratch/midway3/espolston/vcf/binary_dcgm
 
 perl /scratch/midway3/espolston/vcf/fam_edit_merged.pl /scratch/midway3/espolston/vcf/binary_dcgm.fam /scratch/midway3/espolston/vcf/Chp1_DroughtandCommonGardenInfo_MergedMetaData.tsv /scratch/midway3/espolston/vcf/dcgm.fam
 
