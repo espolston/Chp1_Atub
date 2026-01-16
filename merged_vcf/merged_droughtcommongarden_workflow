@@ -27,7 +27,9 @@ module load htslib
 bgzip -t /project/kreiner/pairedenv_commongarden/normalized_SNPsonly_vcfs/drought_commongarden_merged_final_ID_IBD.vcf.gz
 bgzip -t /project/kreiner/pairedenv_commongarden/allsites/droughtcgmerged_allsites_final_ID_IBD.vcf.gz
 
-#Started phasing
-#Made list of bams needed in chp1_mergedvcf.Rmd
+#Whatshap as input to shapeit4 (phasing)
+#Made list of bams needed and new sample names in chp1_mergedvcf.Rmd
+#reheads vcf, runs whatshap
+whatshap.sbatch
 
 #chp1_mergedvcf.Rmd has all off server work (MDS/PCA, IBD, phase prep, cmh)
