@@ -30,6 +30,7 @@ bgzip -t /project/kreiner/pairedenv_commongarden/allsites/droughtcgmerged_allsit
 #Whatshap as input to shapeit4 (phasing)
 #Made list of bams needed and new sample names in chp1_mergedvcf.Rmd
 #reheads vcf, runs whatshap
-whatshap.sbatch
+sh copy_whatshapbams.sh
+sbatch whatshap.sbatch
 
 #chp1_mergedvcf.Rmd has all off server work (MDS/PCA, IBD, phase prep, cmh)
