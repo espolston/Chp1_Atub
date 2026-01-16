@@ -28,3 +28,6 @@ bgzip -t /project/kreiner/pairedenv_commongarden/normalized_SNPsonly_vcfs/drough
 bgzip -t /project/kreiner/pairedenv_commongarden/allsites/droughtcgmerged_allsites_final_ID_IBD.vcf.gz
 
 #Started phasing
+#Made list of bams needed in chp1_mergedvcf.Rmd
+
+#chp1_mergedvcf.Rmd has all off server work (MDS/PCA, IBD, phase prep, cmh)
