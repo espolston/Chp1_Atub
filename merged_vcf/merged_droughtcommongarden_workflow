@@ -21,3 +21,6 @@ IBD.sbatch
 #removes related individuals from snp and allsites vcf, runs plink and cmh scan
 afterIBD.sbatch
 
+#Moved extra vcf files into cds3 just in case
+mv /project/kreiner/pairedenv_commongarden/normalized_SNPsonly_vcfs/drought_commongarden_merged_normalized_filtsnps_nomiss30.vcf.gz  /cds3/kreiner/dcgm_filteredvcf/ & mv /project/kreiner/pairedenv_commongarden/normalized_SNPsonly_vcfs/drought_commongarden_merged_normalized_filtsnps_nomiss30_rehead.vcf.gz /cds3/kreiner/dcgm_filteredvcf/
+
