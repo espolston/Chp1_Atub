@@ -44,6 +44,19 @@ gatk_indivvar.sbatch
 2_bamvariantcall.sh #creates failed regions file to start next run
 3_bamvariantcall.sbatch
 
+
+
+
+
+#Paused here because of compute hours
+#got partway through the gvcf stage and these are stored in /cds3/kreiner/commongarden_drought_snpcall/commongarden_drought_mergedsnp/
+#files open on computer for snp calling: post_snpcalling.txt, gatk_indivvar.sbatch, 2_bamvariantcall.sh, 3_bamvariantcall.sbatch, gatk_gvcftovcf.sbatch, 2_gvcftovcf.sh, 3_gvcftovcf.sbatch, 1_snpfiltermove.sh, 2_snpfilterset.sbatch, 3_checkandfinish.sh
+
+
+
+
+
+
 #make map file, database for gatk and get region specific vcf files
 gatk_gvcftovcf.sbatch
 2_gvcftovcf.sh
