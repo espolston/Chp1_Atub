@@ -11,7 +11,7 @@
 #Copy bams to scratch
 bams.sbatch
 
-#make regions file (bam name, renamed sample) "*_193_2.dd.bam"
+#make regions file (col1: bam name (not bamfile, no .bam), col2: renamed sample ex: AT1_10	P4_Ag_4_T) "*_193_2.dd.bam"
 bams_samplenames.txt #2 indivs to remove have been (from metadata)
 #add duplicate marked bam extension to col 1 "*_193_2.sort.dd.bam" 
 awk '{OFS="\t"; $3 = $1"_193_2.dd.bam"; print $3,$2}' bam_samplenames.txt > bamsdone_samplenames.txt
