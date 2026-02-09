@@ -31,7 +31,7 @@ my $env_col = 5;
 while(my $ph_line = <A>){
 	chomp $ph_line;
 	last unless $ph_line =~ /\S/;
-	print "Fam line:" . $ph_line . "\n";
+	#print "Fam line:" . $ph_line . "\n";
 	my @a = split(' ', $ph_line);
 
 	my $IID = $a[$iid_col];
@@ -40,8 +40,9 @@ while(my $ph_line = <A>){
 	my $col_1 = "Blank";
 	my $envir_code = "Blank";
 	
-	if($col_1 =~ /P/){
-		$col_1 = $FID . "_" . $IID;
+	if($FID =~ /P/){
+		$col_1 = $FID . "_" . $IID . "_T";
+		#print "COL 1 for drought samples worked" . $col_1;
 	}else{
 		$col_1 = $FID;
 	}
@@ -73,7 +74,7 @@ while(my $line = <B>){
 	chomp $line;
 	my $individual = "Blank";
 	my $environment = "Blank";
-
+	
 	if(exists($indiv{$line})){
 		my @vals = split(/\s+/, $indiv{$line});
 		$individual = $vals[0];
