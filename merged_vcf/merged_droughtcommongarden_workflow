@@ -34,6 +34,9 @@ bgzip -t /project/kreiner/pairedenv_commongarden/allsites/droughtcgmerged_allsit
 module load plink
 plink --bfile /scratch/midway3/espolston/vcf/binary_dcgm --fam /scratch/midway3/espolston/vcf/dcgm.fam --clump /scratch/midway3/espolston/vcf/dcgm_cmh.cmh --clump-p1 .000000002995 --clump-p2 .002202 --clump-kb 1000 --clump-r2 .5 --clump-field P --allow-no-sex --allow-extra-chr --clump-snp-field SNP --make-founders --out /scratch/midway3/espolston/vcf/clumped_dcgm
 
+#Run pixy
+sbatch pixy_dcgm.sbatch
+
 #Whatshap as input to shapeit4 (phasing)
 #Made list of bams needed and new sample names in chp1_mergedvcf.Rmd
 #reheads vcf, runs whatshap
@@ -43,3 +46,5 @@ sh 2_whatshap.sh
 sbatch 3_whatshap.sbatch
 
 #chp1_mergedvcf.Rmd has all off server work (MDS/PCA, IBD, phase prep, cmh)
+
+
