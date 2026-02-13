@@ -6,9 +6,10 @@ use warnings;
 my $sample_file = shift(@ARGV) or die; #indivs from vcf
 my $input_fam = shift(@ARGV) or die; #fam file produced by fam_edit_merged.pl
 my $output = shift(@ARGV) or die; #output fam file
+my $outstart = shift(@ARGV) or die; #pair output start
 unlink(qq{$output});
 
-#perl pixy_pop.pl /scratch/midway3/espolston/sample_ids.txt  /scratch/midway3/espolston/vcf/dcgm.fam /scratch/midway3/espolston/dcg_popfile.txt
+#perl pixy_pop.pl /scratch/midway3/espolston/sample_ids.txt  /scratch/midway3/espolston/vcf/dcgm.fam /scratch/midway3/espolston/dcg_popfile.txt /scratch/midway3/espolston/dcgm_pair
 #col 1: family code (FID)
 #col 2: indiv code (IID)
 #col 3: pair/cluster 
@@ -25,6 +26,7 @@ my %dats = ();
 
 my $fid_col = 0;
 my $iid_col = 1;
+my $pair_col = 2;
 my $env_col = 5;
 
 #get indiv and enviros from fam file
@@ -37,6 +39,7 @@ while(my $ph_line = <A>){
 	my $IID = $a[$iid_col];
 	my $FID = $a[$fid_col];
 	my $envir = $a[$env_col];
+	my $pair = $a[$pair_col];
 	my $col_1 = "Blank";
 	my $envir_code = "Blank";
 	
@@ -56,9 +59,9 @@ while(my $ph_line = <A>){
 		die "Fam file line error " . $ph_line;
 	}
 	
-	print "(indiviudal, envircode)" . $col_1 . "\t" . $envir_code ."\n";
+	#print "(indiviudal, envircode)" . $col_1 . "\t" . $envir_code ."\n";
 
-	$indiv{$col_1} = $col_1 . " " . $envir_code;
+	$indiv{$col_1} = $col_1 . " " . $envir_code . " " . $pair;
 	
 }
 close A; 
@@ -84,7 +87,42 @@ while(my $line = <B>){
 	}
 	
 	print C $individual . "\t" . $environment . "\n"; 
-	print "adding to output " . $individual . "\t" . $environment . "\n";
+	#print "adding to output " . $individual . "\t" . $environment . "\n";
 }
 close B;
 close C; 
+
+my %pairhash = ();
+
+foreach my $ind (keys %indiv){
+	my $info = $indiv{$ind};
+	my @infos = split(/\s+/, $info);
+	my $id = $infos[0];
+	my $envir = $infos[1];
+	my $pairnum = $infos[2];
+	#print "PAIR " . $pairnum . "\n";
+	
+	#print "Line 1 " . $info . "\n";
+	
+	if(exists($pairhash{$pairnum})){
+		my $prev = $pairhash{$pairnum};
+	
+		$pairhash{$pairnum} = $prev. "\n" . $id . "\t" . $envir; 
+		
+		#print "Already exists " . $prev . "\n" . "Adding: " . $id . "\t" . $envir . "\n";
+	}else{
+		$pairhash{$pairnum} = $id . "\t" . $envir; 
+		#print "Adding new: " . $id . "\t" . $envir . "\n";
+	}
+}
+
+foreach my $key (keys %pairhash){
+	my $outfile = $outstart. "_" . $key . ".txt";
+	open (D, ">", $outfile)
+	or die "Could not open output " . $outfile;
+
+	print D $pairhash{$key} . "\n";
+	close D; 
+	
+	print "Adding pair " . $key . "\n" . $pairhash{$key} . "\n";
+}
