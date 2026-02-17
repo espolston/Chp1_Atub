@@ -35,3 +35,6 @@ plink --vcf /project/kreiner/pairedenv_commongarden/normalized_SNPsonly_vcfs/dro
 perl /scratch/midway3/espolston/vcf/fam_edit_merged.pl /scratch/midway3/espolston/vcf/binary_dcgm.fam /scratch/midway3/espolston/vcf/Chp1_DroughtandCommonGardenInfo_MergedMetaData.tsv /scratch/midway3/espolston/vcf/dcgm.fam
 
 plink --bfile /scratch/midway3/espolston/vcf/binary_dcgm --bim /scratch/midway3/espolston/vcf/binary_dcgm.bim --fam /scratch/midway3/espolston/vcf/dcgm.fam --mh --within /scratch/midway3/espolston/vcf/dcgm.fam --allow-extra-chr --allow-no-sex --nonfounders --out /scratch/midway3/espolston/vcf/dcgm_cmh
+
+#run pca again after IBD rem
+plink --bfile /scratch/midway3/espolston/vcf/binary_dcgm --bim /scratch/midway3/espolston/vcf/binary_dcgm.bim --fam /scratch/midway3/espolston/vcf/dcgm.fam --pca --allow-no-sex --allow-extra-chr --make-founders --out /scratch/midway3/espolston/vcf/dcgm_pca_after_IBD
