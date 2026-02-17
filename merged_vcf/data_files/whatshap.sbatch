@@ -19,6 +19,15 @@
 #source activate whatshap-env
 #conda install -c conda-forge bcftools
 
+#for making env on randi:
+#module load gcc/12.1.0
+#module load python/3.10.5
+#module load miniconda3/24.9.2
+#conda create -n whatshap-env whatshap -c bioconda -c conda-forge
+#conda init
+#conda activate whatshap-env 
+#conda install -c conda-forge bcftools
+
 #samples in vcf need to make sample name in bam file (for cg:# for d:AT#_#)
 #rehead_forwhatshap.txt: col 1=current_samplename col2=new_samplename
 #module load htslib
@@ -54,10 +63,15 @@
 #    }
 #' /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/dcgm_whatshap_samples.txt /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/scafs.txt > /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/dcgm_whatshap_runs.txt
 
+#for midway
 module load python/anaconda-2023.09
 source activate whatshap-env
 module load parallel
 module load apptainer
+
+#for randi
+conda activate whatshap-env
+
 
 # ============================================
 # CONFIGURATION - Edit these paths
@@ -94,6 +108,10 @@ run_whatshap() {
         # Mark as complete only if successful
         echo "Completed at $(date)" > "${done_file}"
         echo "Region: ${region}" >> "${done_file}"
+    fi
+    
+    if bgzip -c "${OUT_DIR_START}_${region}/whatshapout_${samp}_${region}.vcf" > "${OUT_DIR_START}_${region}/whatshapout_${samp}_${region}.vcf.gz"; then
+    	rm "${OUT_DIR_START}_${region}/whatshapout_${samp}_${region}.vcf"
     fi
     
 rm "${MAIN_DIR}sample_${samp}_${region}.vcf.gz"
