@@ -35,7 +35,7 @@ module load plink
 plink --bfile /scratch/midway3/espolston/vcf/binary_dcgm --fam /scratch/midway3/espolston/vcf/dcgm.fam --clump /scratch/midway3/espolston/vcf/dcgm_cmh.cmh --clump-p1 .000000002995 --clump-p2 .002202 --clump-kb 1000 --clump-r2 .5 --clump-field P --allow-no-sex --allow-extra-chr --clump-snp-field SNP --make-founders --out /scratch/midway3/espolston/vcf/clumped_dcgm
 
 #Run pixy
-sbatch pixy_dcgm.sbatch
+sbatch pixy_dcgm.sbatch #editted names and downloaded and analysed in chp1_mergedvcf.Rmd
 
 #Whatshap as input to shapeit4 (phasing)
 #Made list of bams needed and new sample names in chp1_mergedvcf.Rmd
