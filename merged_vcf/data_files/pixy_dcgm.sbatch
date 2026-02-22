@@ -13,15 +13,6 @@
 
 #pixy: https://pixy.readthedocs.io/en/latest/index.html
 
-#had to reheader the vcf file 
-#module load python/anaconda-2023.09
-#source activate /project/kreiner/espolston/
-#bcftools view -h /project/kreiner/pairedenv_commongarden/allsites/droughtcgmerged_allsites_final_ID_IBD.vcf.gz > /scratch/midway3/espolston/header.txt
-#vim /scratch/midway3/espolston/header.txt
-#i > edit FORMAT=<ID=GL,Number=. to Number=G > esc > :wq
-#bcftools reheader -h /scratch/midway3/espolston/header.txt -o /project/kreiner/pairedenv_commongarden/allsites/droughtcgmerged_allsites_final_ID_IBD_rehead.vcf.gz /project/kreiner/pairedenv_commongarden/allsites/droughtcgmerged_allsites_final_ID_IBD.vcf.gz
-#tabix -p vcf /project/kreiner/pairedenv_commongarden/allsites/droughtcgmerged_allsites_final_ID_IBD_rehead.vcf.gz
-
 #make population file
 #get sample names from vcf
 #module load python/anaconda-2023.09
@@ -30,7 +21,7 @@
 
 #add ag/nat as second column
 #PIXY NEEDS COMPARISONS AS STRINGS NOT 1/2!!!!
-#perl pixy_pop.pl /scratch/midway3/espolston/sample_ids.txt /scratch/midway3/espolston/vcf/dcgm.fam /scratch/midway3/espolston/dcgm_namepopfile.txt
+#perl pixy_pop.pl /scratch/midway3/espolston/sample_ids.txt /scratch/midway3/espolston/vcf/dcgm.fam /scratch/midway3/espolston/dcgm_namepopfile.txt /scratch/midway3/espolston/dcgm_pair
 
 #make sites files
 #bed file of dcgm clump sig sites - done in chp1_mergedvcf.Rmd
@@ -42,20 +33,32 @@ conda activate pixy
 
 module load parallel
 
+#did run this one
 #pixy on all pairs for clumped sites
-parallel -j 16 'pixy --stats pi fst dxy \
-  --vcf /project/kreiner/pairedenv_commongarden/allsites/droughtcgmerged_allsites_final_ID_IBD_rehead.vcf.gz \
-  --populations /scratch/midway3/espolston/dcgm_namepopfile.txt \
-  --bed_file /scratch/midway3/espolston/dcgm_sig.bed \
-  --chromosomes 'Scaffold_{1}' \
-  --output_folder /scratch/midway3/espolston/agnat_{1} \
-  --n_core 5' ::: {1..16}
+#parallel -j 16 'pixy --stats pi fst dxy \
+#  --vcf /project/kreiner/pairedenv_commongarden/allsites/droughtcgmerged_allsites_final_ID_IBD.vcf.gz \
+#  --populations /scratch/midway3/espolston/dcgm_namepopfile.txt \
+#  --bed_file /scratch/midway3/espolston/dcgm_sig.bed \
+#  --chromosomes 'Scaffold_{1}' \
+#  --output_folder /scratch/midway3/espolston/agnat_{1} \
+#  --n_core 5' ::: {1..16}
 
 
 #pixy on all sites
 pixy --stats pi fst \
-  --vcf /project/kreiner/pairedenv_commongarden/allsites/droughtcgmerged_allsites_final_ID_IBD_rehead.vcf.gz \
+  --vcf /project/kreiner/pairedenv_commongarden/allsites/droughtcgmerged_allsites_final_ID_IBD.vcf.gz \
   --populations /scratch/midway3/espolston/dcgm_namepopfile.txt \
   --window_size 10000 \
   --output_folder /scratch/midway2/espolston/pixy_formanplots10 \
   --n_core 5
+
+#AG VS NAT for pairs for clumped sites
+parallel -j 17 'pixy --stats pi fst dxy \
+  --vcf /project/kreiner/pairedenv_commongarden/allsites/droughtcgmerged_allsites_final_ID_IBD.vcf.gz \
+  --populations /scratch/midway3/espolston/dcgm_pair_{1}.txt \
+  --bed_file /scratch/midway3/espolston/dcgm_sig.bed \
+  --chromosomes Scaffold_{2} \
+  --output_folder /scratch/midway3/espolston/pair_{1}_scaf_{2} \
+  --n_core 5' ::: {1..17} ::: {1..16}
+  
+#renamed files so unique pixy_pi etc and downloaded
