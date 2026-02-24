@@ -14,11 +14,22 @@ recomb_LDhat$pos<-recomb_LDhat$Loci * 1000 #to use bp positions - easier
 unique(recomb_LDhat$Scaf)
 recomb_LDhat$chr_num <- as.numeric(gsub("Scaffold_([0-9]+).*", "\\1", recomb_LDhat$Scaf))
 
+#filter to remove duplicate bp 
+recomb_LDhat_duprem <- tibble("Scaf" = character(), "Loci" = numeric(), "Mean_rho" = numeric(), "Median_rho" = numeric(), "L95" = numeric(), "U95" = numeric(), "pos" = numeric(), "chr_num" = numeric())
+for(i in 1:length(unique(recomb_LDhat$chr_num))){
+  temp <- recomb_LDhat %>%
+    filter(chr_num == i)
+  temp <- temp %>%
+    filter(duplicated(temp$Loci) == F)
+  recomb_LDhat_duprem <- add_row(recomb_LDhat_duprem, temp)
+}
+
+
 # Quick histogram of variation in mean rho
-hist(recomb_LDhat$Mean_rho)
+hist(recomb_LDhat_duprem$Mean_rho)
 
 # Create windowed analysis by chromosome ()
-winrecomb <-  recomb_LDhat %>% 
+winrecomb <-  recomb_LDhat_duprem %>% 
   mutate(win = floor(pos/100000)) %>%
   group_by(chr_num,win) %>%
   dplyr::summarise(mean_winrho = mean(Mean_rho))
@@ -35,12 +46,12 @@ recomb_landscape <- ggplot(data = winrecomb, aes(win/10, mean_winrho)) +
 recomb_landscape
 
 # Calculate cumulative recombination rate across each chromosome
-recomb_LDhat <- recomb_LDhat %>%
+recomb_LDhat_duprem <- recomb_LDhat_duprem %>%
   group_by(chr_num) %>%
   mutate(cumulativerho = cumsum(Mean_rho)) %>%
   ungroup()
 
-winrecombcum <-  recomb_LDhat %>% 
+winrecombcum <-  recomb_LDhat_duprem %>% 
   mutate(win = floor(pos/100000)) %>%
   group_by(chr_num,win) %>%
   dplyr::summarise(mean_winrhocum = mean(cumulativerho))
@@ -62,9 +73,13 @@ recombcum_landscape #note that some chromosomes seem to have longer maps despite
 ne=5411804
 
 #convert to cM
-recomb_LDhat$r<-recomb_LDhat$cumulativerho/(4*ne)
-recomb_LDhat$cM<-recomb_LDhat$r*100
+recomb_LDhat_duprem$r<-recomb_LDhat_duprem$cumulativerho/(4*ne)
+recomb_LDhat_duprem$cM<-recomb_LDhat_duprem$r*100
 
 
-map_forshapeit<-recomb_LDhat %>% select(pos, Scaf, cM)
-write.table(map_forshapeit,"/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/LDbased_cMestimates_bychrom.txt",quote=F,col.names = F, row.names = F)
+
+map_forshapeit <- recomb_LDhat_duprem %>%
+  mutate("chr" = paste("Scaffold_", chr_num, sep ="")) %>%
+  select(pos, chr, cM)
+
+write.table(map_forshapeit,"/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/LDbased_cMestimates_bychrom.txt", quote=F,col.names = T, row.names = F)
