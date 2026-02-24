@@ -63,14 +63,14 @@ parallel -j 17 'pixy --stats pi fst dxy \
   
 #0 AND 4 FOLD DEGENERACY SITES
 #/project/kreiner/data/genome/degeneracy has 0 and 4 fold sites annotated with https://github.com/harvardinformatics/degenotate
-pixy --stats pi fst dxy \
+pixy --stats pi \
   --vcf /project/kreiner/pairedenv_commongarden/allsites/droughtcgmerged_allsites_final_ID_IBD.vcf.gz \
   --populations /scratch/midway3/espolston/dcgm_namepopfile.txt \
   --bed_file /project/kreiner/data/genome/degeneracy/0fold_Atub193_hap2.bed \
   --output_folder /scratch/midway3/espolston/zerofold_pixy/ \
   --n_core 5
   
-pixy --stats pi fst dxy \
+pixy --stats pi \
   --vcf /project/kreiner/pairedenv_commongarden/allsites/droughtcgmerged_allsites_final_ID_IBD.vcf.gz \
   --populations /scratch/midway3/espolston/dcgm_namepopfile.txt \
   --bed_file /project/kreiner/data/genome/degeneracy/4fold_Atub193_hap2.bed \
