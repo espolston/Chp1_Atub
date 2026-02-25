@@ -3,7 +3,9 @@
 # Load required libraries
 library(data.table)   # Fast data reading and manipulation
 library(tidyverse)    # Data manipulation and visualization toolkit
-
+options(digits = 20)
+options(pillar.sigfig = 20)
+options(scipen = 999)
 
 # Read Y chromosome recombination data (males only)
 recomb_LDhat <- fread("/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/allchroms_193reference_ldmapresults.txt2",sep="\t")  # tabs or multiple spaces
