@@ -33,6 +33,10 @@ bgzip -t /project/kreiner/pairedenv_commongarden/allsites/droughtcgmerged_allsit
 #--clump-p1 from bonferroni .05 significance cutoff in raw p value --clump-p2 from fdr .05 cutoff in raw p
 module load plink
 plink --bfile /scratch/midway3/espolston/vcf/binary_dcgm --fam /scratch/midway3/espolston/vcf/dcgm.fam --clump /scratch/midway3/espolston/vcf/dcgm_cmh.cmh --clump-p1 .000000002995 --clump-p2 .002202 --clump-kb 1000 --clump-r2 .5 --clump-field P --allow-no-sex --allow-extra-chr --clump-snp-field SNP --make-founders --out /scratch/midway3/espolston/vcf/clumped_dcgm
+#clumping to match sci 2022 paper
+plink --bfile /scratch/midway3/espolston/vcf/binary_dcgm --fam /scratch/midway3/espolston/vcf/dcgm.fam --clump /scratch/midway3/espolston/vcf/dcgm_cmh.cmh --clump-p1 .000000002995 --clump-p2 .008015 --clump-kb 1000 --clump-r2 .5 --clump-field P --allow-no-sex --allow-extra-chr --clump-snp-field SNP --make-founders --out /scratch/midway3/espolston/vcf/clumped_FDR.1_dcgm
+
+
 
 #Run pixy
 sbatch pixy_dcgm.sbatch 
