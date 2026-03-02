@@ -58,7 +58,7 @@ run_shapeit() {
 	mkdir -p "${OUT_DIR_START}"
 	mkdir -p "${OUT_DIR_START}/completed/"
 	
-	done_file="${OUT_DIR_START}/completed/${samp}_${region}.done"
+	done_file="${OUT_DIR_START}/completed/${region}.done"
 	
 	#Run shapeit on that chromosome
 	#from this: https://odelaneau.github.io/shapeit4/#installation
@@ -68,7 +68,7 @@ run_shapeit() {
         echo "Region: ${region}" >> "${done_file}"
     fi
     
-    bgzip -c "${OUT_DIR_START}_${region}/phased_dcgm_${region}.vcf" > "${OUT_DIR_START}/phased_dcgm_${region}.vcf.gz"
+    bgzip -c "${OUT_DIR_START}/phased_dcgm_${region}.vcf" > "${OUT_DIR_START}/phased_dcgm_${region}.vcf.gz"
     
     tabix -p vcf "${OUT_DIR_START}/phased_dcgm_${region}.vcf.gz"
 
