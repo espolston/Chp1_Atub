@@ -33,7 +33,7 @@
 #module load htslib
 #module load python/anaconda-2023.09
 #source activate /project/kreiner/espolston/
-#bcftools reheader --samples /scratch/midway3/espolston/vcf/rehead_forwhatshap.txt -o /project/kreiner/pairedenv_commongarden/normalized_SNPsonly_vcfs/drought_commongarden_whatshap$
+##bcftools reheader --samples /scratch/midway3/espolston/vcf/rehead_forwhatshap.txt -o /project/kreiner/pairedenv_commongarden/normalized_SNPsonly_vcfs/drought_commongarden_whatshap.vcf.gz /project/kreiner/pairedenv_commongarden/normalized_SNPsonly_vcfs/drought_commongarden_merged_final_ID_IBD.vcf.gz
 
 #tabix -p vcf /project/kreiner/pairedenv_commongarden/normalized_SNPsonly_vcfs/drought_commongarden_whatshap.vcf.gz
 
