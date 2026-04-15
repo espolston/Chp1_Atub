@@ -36,8 +36,6 @@ plink --bfile /scratch/midway3/espolston/vcf/binary_dcgm --fam /scratch/midway3/
 #clumping to match sci 2022 paper
 plink --bfile /scratch/midway3/espolston/vcf/binary_dcgm --fam /scratch/midway3/espolston/vcf/dcgm.fam --clump /scratch/midway3/espolston/vcf/dcgm_cmh.cmh --clump-p1 .008015 --clump-kb 1000 --clump-r2 .5 --clump-field P --allow-no-sex --allow-extra-chr --clump-snp-field SNP --make-founders --out /scratch/midway3/espolston/vcf/clumped_FDR.1_dcgm
 
-
-
 #Run pixy
 sbatch pixy_dcgm.sbatch 
 sh pixyrename.sh #editted names and downloaded and analysed in chp1_mergedvcf.Rmd
@@ -49,6 +47,14 @@ sh copy_whatshapbams.sh
 sbatch whatshap.sbatch
 sh 2_whatshap.sh
 sbatch 3_whatshap.sbatch
+sbatch shapeitprep.sbatch
+sbatch shapeit4.sbatch
+
+
+#Running selective sweep programs
+#Neither of these files have been uploaded
+sbatch selscan.sbatch
+sbatch H12_hapscan.sbatch
 
 #chp1_mergedvcf.Rmd has all off server work (MDS/PCA, IBD, phase prep, cmh)
 
