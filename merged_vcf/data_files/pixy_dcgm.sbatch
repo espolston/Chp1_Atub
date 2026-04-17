@@ -76,3 +76,10 @@ pixy --stats pi \
   --bed_file /project/kreiner/data/genome/degeneracy/4fold_Atub193_hap2.bed \
   --output_folder /scratch/midway3/espolston/fourfold_pixy/ \
   --n_core 5
+
+pixy --stats watterson_theta \
+  --vcf /project/kreiner/pairedenv_commongarden/allsites/droughtcgmerged_allsites_final_ID_IBD.vcf.gz \
+  --populations /scratch/midway3/espolston/dcgm_namepopfile.txt \
+  --bed_file /project/kreiner/data/genome/degeneracy/4fold_Atub193_hap2.bed \
+  --output_folder /scratch/midway3/espolston/fourfold_pixy/ \
+  --n_core 5
