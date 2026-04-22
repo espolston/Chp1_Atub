@@ -42,6 +42,8 @@ sh pixyrename.sh #editted names and downloaded and analysed in chp1_mergedvcf.Rm
 
 #Whatshap as input to shapeit4 (phasing)
 #Made list of bams needed and new sample names in chp1_mergedvcf.Rmd
+#create map file
+rho_to_cM_forlibby.R (now rho_to_cM_forlibby_new.R with selscan prep)
 #reheads vcf, runs whatshap
 sh copy_whatshapbams.sh
 sbatch whatshap.sbatch
