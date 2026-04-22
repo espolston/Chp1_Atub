@@ -52,9 +52,8 @@ sbatch shapeit4.sbatch
 
 
 #Running selective sweep programs
-#Neither of these files have been uploaded
 sbatch selscan.sbatch
-sbatch H12_hapscan.sbatch
+sbatch H12_hapscan.sbatch #FILE NOT UPLOADED YET
 
 #chp1_mergedvcf.Rmd has all off server work (MDS/PCA, IBD, phase prep, cmh)
 
