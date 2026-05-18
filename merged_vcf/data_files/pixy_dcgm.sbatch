@@ -60,6 +60,14 @@ parallel -j 17 'pixy --stats pi fst dxy \
   --chromosomes Scaffold_{2} \
   --output_folder /scratch/midway3/espolston/pair_{1}_scaf_{2} \
   --n_core 5' ::: {1..17} ::: {1..16}
+
+#AG VS NAT for pairs for 10 kb windows
+parallel -j 17 'pixy --stats fst \
+  --vcf /project/kreiner/pairedenv_commongarden/allsites/droughtcgmerged_allsites_final_ID_IBD.vcf.gz \
+  --populations /scratch/midway3/espolston/dcgm_pair_{1}.txt \
+  --window_size 10000 \
+  --output_folder /scratch/midway3/espolston/pair_{1}_windows \
+  --n_core 5' ::: {1..17}
   
 #0 AND 4 FOLD DEGENERACY SITES
 #/project/kreiner/data/genome/degeneracy has 0 and 4 fold sites annotated with https://github.com/harvardinformatics/degenotate
