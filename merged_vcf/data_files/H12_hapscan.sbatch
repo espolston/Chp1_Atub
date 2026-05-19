@@ -38,14 +38,15 @@ for sc in {1..16}; do awk -F',' '{
 
 #Run H12 and H2H1
 #python H12_H2H1.py <file of all nucleotides at each site> <sample size> -o <outfilename.txt> -w <window site in snps, set at 400 in ex> -j <distance between centers of analysis windows in snps, default 50> -d <tolerable hamming distance between haplotypes to be single haplotype, default 0>
-for sc in {1..16}; do python /scratch/midway3/espolston/h12/H12_H2H1.py  /scratch/midway3/espolston/garud_h12/h12_final_Scaffold_${sc}.txt 440 -o dcgm_hap_stats_${sc}.txt -w 400; done
+for sc in {1..16}; do python /scratch/midway3/espolston/h12/H12_H2H1.py  /scratch/midway3/espolston/garud_h12/h12_final_Scaffold_${sc}.txt 440 -o /scratch/midway3/espolston/garud_h12/dcgm_hap_stats_Scaffold_${sc}.txt -w 400; done
 
 #detect the h12 peaks
 #python H12peakFinder.py <output from h12_h1h2.py> -o <output name> can also use -t to define h12 cutoff
-for sc in {1..16}; do python /scratch/midway3/espolston/h12/H12peakFinder.py dcgm_hap_stats_${sc}.txt -o dcgm_hap_peaks_${sc}.txt; done
+for sc in {1..16}; do python /scratch/midway3/espolston/h12/H12peakFinder.py dcgm_hap_stats_Scaffold_${sc}.txt -o /scratch/midway3/espolston/garud_h12/dcgm_hap_peaks_Scaffold_${sc}.txt; done
 
 #run visualizations - there are more as well https://github.com/ngarud/SelectionHapStats/blob/master/README_selectionHapStats.pdf 
-for sc in {1..16}; do Rscript /scratch/midway3/espolston/h12/H12_viz.R /scratch/midway3/espolston/garud_h12/dcgm_hap_stats_Scaffold_${sc}.txt /scratch/midway3/espolston/garud_h12/dcgm_hap_peaks_Scaffold_${sc}.txt
-/scratch/midway3/espolston/garud_h12/dcgm_Scaffold_${sc}_h12scan.pdf 10; done
+#ran these locally
+for sc in {1..16}; do Rscript /Users/libbypolston/Desktop/h12/H12_viz.R /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/H12_H2H1/dcgm_hap_stats_Scaffold_${sc}.txt /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/H12_H2H1/dcgm_hap_peaks_Scaffold_${sc}.txt
+/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/H12_H2H1/dcgm_Scaffold_${sc}_h12scan.pdf 10; done
 
-for sc in {1..16}; do Rscript /scratch/midway3/espolston/h12/hapSpectrum_viz.R /scratch/midway3/espolston/garud_h12/dcgm_hap_peaks_Scaffold_${sc}.txt /scratch/midway3/espolston/garud_h12/dcgm_Scaffold_${sc}_spectrum.pdf 10 440; done
+for sc in {1..16}; do Rscript /Users/libbypolston/Desktop/h12/hapSpectrum_viz.R /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/H12_H2H1/dcgm_hap_peaks_Scaffold_${sc}.txt /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/H12_H2H1/dcgm_Scaffold_${sc}_spectrum.pdf 10 440; done
