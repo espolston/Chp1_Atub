@@ -50,3 +50,60 @@ for sc in {1..16}; do Rscript /Users/libbypolston/Desktop/h12/H12_viz.R /Users/l
 /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/H12_H2H1/dcgm_Scaffold_${sc}_h12scan.pdf 10; done
 
 for sc in {1..16}; do Rscript /Users/libbypolston/Desktop/h12/hapSpectrum_viz.R /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/H12_H2H1/dcgm_hap_peaks_Scaffold_${sc}.txt /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/H12_H2H1/dcgm_Scaffold_${sc}_spectrum.pdf 10 440; done
+
+#run h12 PER PAIR!
+#first made phased vcfs have the updated sample names
+module load python/anaconda-2022.05
+source activate /project/kreiner/espolston/
+
+parallel -j 5 'bcftools reheader --samples /scratch/midway3/espolston/rehead_afterwhatshap.txt -o /scratch/midway3/espolston/new_phased/phased_dcgm_Scaffold_{}_newhead.vcf.gz /scratch/midway3/espolston/phased/phased_dcgm_Scaffold_{}.vcf.gz' ::: {1..16}
+parallel -j 5 'tabix -p vcf /scratch/midway3/espolston/new_phased/phased_dcgm_Scaffold_{}_newhead.vcf.gz' ::: {1..16}
+
+#split ag and nat vcfs - with dcgm_namepopfile.txt
+awk '{OFS="\t"} $2 == "AG" {print $1}' dcgm_namepopfile.txt > ag_indivs.txt
+awk '{OFS="\t"} $2 == "NAT" {print $1}' dcgm_namepopfile.txt > nat_indivs.txt
+
+parallel -j 5 'bcftools view --samples-file /scratch/espolston/sel_scan/ag_indivs.txt -Oz -o /scratch/midway3/espolston/garud_h12_agnat/phased_dcgm_Scaffold_{}_ag.vcf.gz /scratch/midway3/espolston/new_phased/phased_dcgm_Scaffold_{}_newhead.vcf.gz' ::: {1..16}
+parallel -j 5 'tabix -p vcf /scratch/midway3/espolston/garud_h12_agnat/phased_dcgm_Scaffold_{}_ag.vcf.gz' ::: {1..16}
+parallel -j 5 'bcftools view --samples-file /scratch/espolston/sel_scan/nat_indivs.txt -Oz -o /scratch/midway3/espolston/garud_h12_agnat/phased_dcgm_Scaffold_{}_nat.vcf.gz /scratch/midway3/espolston/new_phased/phased_dcgm_Scaffold_{}_newhead.vcf.gz' ::: {1..16}
+parallel -j 5 'tabix -p vcf /scratch/midway3/espolston/garud_h12_agnat/phased_dcgm_Scaffold_{}_nat.vcf.gz' ::: {1..16}
+
+for sc in {1..16}; do
+bcftools query --format '%POS[,%TGT]\n' /scratch/midway3/espolston/garud_h12_agnat/phased_dcgm_Scaffold_${sc}_ag.vcf.gz > /scratch/midway3/espolston/garud_h12_agnat/h12_input_Scaffold_${sc}_ag.txt; done
+
+for sc in {1..16}; do
+bcftools query --format '%POS[,%TGT]\n' /scratch/midway3/espolston/garud_h12_agnat/phased_dcgm_Scaffold_${sc}_nat.vcf.gz > /scratch/midway3/espolston/garud_h12_agnat/h12_input_Scaffold_${sc}_nat.txt; done
+
+for sc in {1..16}; do awk -F',' '{
+	printf $1;	
+    for (n=2; n<=NF; ++n) {
+        split($n, part, "|");
+        printf ","part[1]","part[2];
+    }
+    printf "\n";
+}' /scratch/midway3/espolston/garud_h12_agnat/h12_input_Scaffold_${sc}_ag.txt > /scratch/midway3/espolston/garud_h12_agnat/h12_final_Scaffold_${sc}_ag.txt; done
+
+for sc in {1..16}; do awk -F',' '{
+	printf $1;	
+    for (n=2; n<=NF; ++n) {
+        split($n, part, "|");
+        printf ","part[1]","part[2];
+    }
+    printf "\n";
+}' /scratch/midway3/espolston/garud_h12_agnat/h12_input_Scaffold_${sc}_nat.txt > /scratch/midway3/espolston/garud_h12_agnat/h12_final_Scaffold_${sc}_nat.txt; done
+
+#get # indivs per env type
+#awk '$2=="AG" {count++} END {print count}' dcgm_namepopfile.txt #219
+#awk '$2=="NAT" {count++} END {print count}' dcgm_namepopfile.txt #221
+
+#Run H12 and H2H1
+for sc in {1..16}; do python /scratch/midway3/espolston/h12/H12_H2H1.py  /scratch/midway3/espolston/garud_h12_agnat/h12_final_Scaffold_${sc}_ag.txt 219 -o /scratch/midway3/espolston/garud_h12_agnat/dcgm_hap_stats_Scaffold_${sc}_ag.txt -w 400; done
+
+#detect the h12 peaks
+for sc in {1..16}; do python /scratch/midway3/espolston/h12/H12peakFinder.py /scratch/midway3/espolston/garud_h12_agnat/dcgm_hap_stats_Scaffold_${sc}_ag.txt -o /scratch/midway3/espolston/garud_h12_agnat/dcgm_hap_peaks_Scaffold_${sc}_ag.txt; done
+
+#Run H12 and H2H1
+for sc in {1..16}; do python /scratch/midway3/espolston/h12/H12_H2H1.py  /scratch/midway3/espolston/garud_h12_agnat/h12_final_Scaffold_${sc}_nat.txt 220 -o /scratch/midway3/espolston/garud_h12_agnat/dcgm_hap_stats_Scaffold_${sc}_nat.txt -w 400; done
+
+#detect the h12 peaks
+for sc in {1..16}; do python /scratch/midway3/espolston/h12/H12peakFinder.py /scratch/midway3/espolston/garud_h12_agnat/dcgm_hap_stats_Scaffold_${sc}_nat.txt -o /scratch/midway3/espolston/garud_h12_agnat/dcgm_hap_peaks_Scaffold_${sc}_nat.txt; done
