@@ -63,9 +63,9 @@ parallel -j 5 'tabix -p vcf /scratch/midway3/espolston/new_phased/phased_dcgm_Sc
 awk '{OFS="\t"} $2 == "AG" {print $1}' dcgm_namepopfile.txt > ag_indivs.txt
 awk '{OFS="\t"} $2 == "NAT" {print $1}' dcgm_namepopfile.txt > nat_indivs.txt
 
-parallel -j 5 'bcftools view --samples-file /scratch/espolston/sel_scan/ag_indivs.txt -Oz -o /scratch/midway3/espolston/garud_h12_agnat/phased_dcgm_Scaffold_{}_ag.vcf.gz /scratch/midway3/espolston/new_phased/phased_dcgm_Scaffold_{}_newhead.vcf.gz' ::: {1..16}
+parallel -j 5 'bcftools view --samples-file ag_indivs.txt -Oz -o /scratch/midway3/espolston/garud_h12_agnat/phased_dcgm_Scaffold_{}_ag.vcf.gz /scratch/midway3/espolston/new_phased/phased_dcgm_Scaffold_{}_newhead.vcf.gz' ::: {1..16}
 parallel -j 5 'tabix -p vcf /scratch/midway3/espolston/garud_h12_agnat/phased_dcgm_Scaffold_{}_ag.vcf.gz' ::: {1..16}
-parallel -j 5 'bcftools view --samples-file /scratch/espolston/sel_scan/nat_indivs.txt -Oz -o /scratch/midway3/espolston/garud_h12_agnat/phased_dcgm_Scaffold_{}_nat.vcf.gz /scratch/midway3/espolston/new_phased/phased_dcgm_Scaffold_{}_newhead.vcf.gz' ::: {1..16}
+parallel -j 5 'bcftools view --samples-file nat_indivs.txt -Oz -o /scratch/midway3/espolston/garud_h12_agnat/phased_dcgm_Scaffold_{}_nat.vcf.gz /scratch/midway3/espolston/new_phased/phased_dcgm_Scaffold_{}_newhead.vcf.gz' ::: {1..16}
 parallel -j 5 'tabix -p vcf /scratch/midway3/espolston/garud_h12_agnat/phased_dcgm_Scaffold_{}_nat.vcf.gz' ::: {1..16}
 
 for sc in {1..16}; do
