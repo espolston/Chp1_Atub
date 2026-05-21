@@ -77,3 +77,26 @@ parallel -j 5 'selscan --xpehh --vcf /scratch/espolston/sel_scan/phased_ag_Scaff
 #norm --xpehh --files <outfiles produced, can run all at once> --log <outputname>
 norm --xpehh --files sel_scan/Scaffold_*.xpehh.out  --log sel_scan/xpehh_norm_1_16 --bp-win
 norm --xpehh --files sel_scan/Scaffold_*.xpehh.out  --log sel_scan/xpehh_norm_1_16
+
+
+#running per pair
+
+#use pair indiv lists from pixy
+for p in {1..17}; do awk '{OFS="\t"} $2 == "AG" {print $1}' /scratch/espolston/sel_scan_pair/dcgm_pair_${p}.txt > /scratch/espolston/sel_scan_pair/dcgm_pair_${p}_ag.txt; done
+for p in {1..17}; do awk '{OFS="\t"} $2 == "NAT" {print $1}' /scratch/espolston/sel_scan_pair/dcgm_pair_${p}.txt > /scratch/espolston/sel_scan_pair/dcgm_pair_${p}_nat.txt; done
+
+#create pair ag/nat vcfs
+parallel -j 5 'bcftools view --samples-file /scratch/espolston/sel_scan_pair/dcgm_pair_{2}_nat.txt -Oz -o /scratch/espolston/sel_scan_pair/phased_dcgm_Scaffold_{1}_nat_pair_{2}.vcf.gz /scratch/espolston/sel_scan/phased_nat_Scaffold_{1}.vcf.gz' ::: {1..16} ::: {1..17}
+parallel -j 5 'bcftools view --samples-file /scratch/espolston/sel_scan_pair/dcgm_pair_{2}_ag.txt -Oz -o /scratch/espolston/sel_scan_pair/phased_dcgm_Scaffold_{1}_ag_pair_{2}.vcf.gz /scratch/espolston/sel_scan/phased_ag_Scaffold_{1}.vcf.gz' ::: {1..16} ::: {1..17}
+parallel -j 5 'tabix -p vcf /scratch/espolston/sel_scan_pair/phased_dcgm_Scaffold_{1}_nat_pair_{2}.vcf.gz'  ::: {1..16} ::: {1..17}
+parallel -j 5 'tabix -p vcf /scratch/espolston/sel_scan_pair/phased_dcgm_Scaffold_{1}_ag_pair_{2}.vcf.gz'  ::: {1..16} ::: {1..17} 
+
+conda activate selscan_env
+
+#XPEHH
+#vcf = vcf pop1
+#vcfref = vcf pop2
+parallel -j 5 'selscan --xpehh --vcf /scratch/espolston/sel_scan_pair/phased_dcgm_Scaffold_{1}_ag_pair_{2}.vcf.gz --vcf-ref /scratch/espolston/sel_scan_pair/phased_dcgm_Scaffold_{1}_nat_pair_{2}.vcf.gz --map /scratch/espolston/sel_scan/dcgm_Scaffold_{1}.map --cutoff .05 --out /scratch/espolston/sel_scan_pair/Scaffold_{1}_pair_{2} --threads 5' ::: {1..16}  ::: {1..17}
+
+#run norm after to normalize and analyze selection outputs
+norm --xpehh --files sel_scan_pair/Scaffold_*.xpehh.out  --log sel_scan_pair/xpehh_norm_1_16
