@@ -96,6 +96,9 @@ for sc in {1..16}; do awk -F',' '{
 #awk '$2=="AG" {count++} END {print count}' dcgm_namepopfile.txt #219
 #awk '$2=="NAT" {count++} END {print count}' dcgm_namepopfile.txt #221
 
+module load python/anaconda-2022.05
+conda activate /project/ecev35300/steinrue/conda_env/week6_selection_env
+
 #Run H12 and H2H1
 for sc in {1..16}; do python /scratch/midway3/espolston/h12/H12_H2H1.py  /scratch/midway3/espolston/garud_h12_agnat/h12_final_Scaffold_${sc}_ag.txt 219 -o /scratch/midway3/espolston/garud_h12_agnat/dcgm_hap_stats_Scaffold_${sc}_ag.txt -w 400; done
 
