@@ -40,16 +40,16 @@ for sc in {1..16}; do awk -F',' '{
 #python H12_H2H1.py <file of all nucleotides at each site> <sample size> -o <outfilename.txt> -w <window site in snps, set at 400 in ex> -j <distance between centers of analysis windows in snps, default 50> -d <tolerable hamming distance between haplotypes to be single haplotype, default 0>
 for sc in {1..16}; do python /scratch/midway3/espolston/h12/H12_H2H1.py  /scratch/midway3/espolston/garud_h12/h12_final_Scaffold_${sc}.txt 440 -o /scratch/midway3/espolston/garud_h12/dcgm_hap_stats_Scaffold_${sc}.txt -w 400; done
 
-#detect the h12 peaks
-#python H12peakFinder.py <output from h12_h1h2.py> -o <output name> can also use -t to define h12 cutoff
-for sc in {1..16}; do python /scratch/midway3/espolston/h12/H12peakFinder.py dcgm_hap_stats_Scaffold_${sc}.txt -o /scratch/midway3/espolston/garud_h12/dcgm_hap_peaks_Scaffold_${sc}.txt; done
+#removed peak finding here and doing later after post processing for recomb rate etc
 
 #run visualizations - there are more as well https://github.com/ngarud/SelectionHapStats/blob/master/README_selectionHapStats.pdf 
 #ran these locally
-for sc in {1..16}; do Rscript /Users/libbypolston/Desktop/h12/H12_viz.R /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/H12_H2H1/dcgm_hap_stats_Scaffold_${sc}.txt /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/H12_H2H1/dcgm_hap_peaks_Scaffold_${sc}.txt
+for sc in {1..16}; do Rscript /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Code/h12/H12_viz.R /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/H12_H2H1/dcgm_hap_stats_Scaffold_${sc}.txt /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/H12_H2H1/dcgm_hap_peaks_Scaffold_${sc}.txt
 /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/H12_H2H1/dcgm_Scaffold_${sc}_h12scan.pdf 10; done
 
-for sc in {1..16}; do Rscript /Users/libbypolston/Desktop/h12/hapSpectrum_viz.R /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/H12_H2H1/dcgm_hap_peaks_Scaffold_${sc}.txt /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/H12_H2H1/dcgm_Scaffold_${sc}_spectrum.pdf 10 440; done
+for sc in {1..16}; do Rscript /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Code/h12/hapSpectrum_viz.R /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/H12_H2H1/dcgm_hap_peaks_Scaffold_${sc}.txt /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/H12_H2H1/dcgm_Scaffold_${sc}_spectrum.pdf 10 440; done
+
+
 
 #run h12 PER PAIR!
 #first made phased vcfs have the updated sample names
@@ -102,11 +102,25 @@ conda activate /project/ecev35300/steinrue/conda_env/week6_selection_env
 #Run H12 and H2H1
 for sc in {1..16}; do python /scratch/midway3/espolston/h12/H12_H2H1.py  /scratch/midway3/espolston/garud_h12_agnat/h12_final_Scaffold_${sc}_ag.txt 219 -o /scratch/midway3/espolston/garud_h12_agnat/dcgm_hap_stats_Scaffold_${sc}_ag.txt -w 400; done
 
-#detect the h12 peaks
-for sc in {1..16}; do python /scratch/midway3/espolston/h12/H12peakFinder.py /scratch/midway3/espolston/garud_h12_agnat/dcgm_hap_stats_Scaffold_${sc}_ag.txt -o /scratch/midway3/espolston/garud_h12_agnat/dcgm_hap_peaks_Scaffold_${sc}_ag.txt; done
-
 #Run H12 and H2H1
 for sc in {1..16}; do python /scratch/midway3/espolston/h12/H12_H2H1.py  /scratch/midway3/espolston/garud_h12_agnat/h12_final_Scaffold_${sc}_nat.txt 220 -o /scratch/midway3/espolston/garud_h12_agnat/dcgm_hap_stats_Scaffold_${sc}_nat.txt -w 400; done
 
-#detect the h12 peaks
-for sc in {1..16}; do python /scratch/midway3/espolston/h12/H12peakFinder.py /scratch/midway3/espolston/garud_h12_agnat/dcgm_hap_stats_Scaffold_${sc}_nat.txt -o /scratch/midway3/espolston/garud_h12_agnat/dcgm_hap_peaks_Scaffold_${sc}_nat.txt; done
+
+
+#Detecting peaks
+#filter out low recombination rate regions
+Rscript h12_recombcorrec.R recomb_ratebins.txt /scratch/midway3/espolston/garud_h12/dcgm_hap_stats_Scaffold_ .txt
+
+Rscript h12_recombcorrec.R recomb_ratebins.txt /scratch/midway3/espolston/garud_h12_agnat/dcgm_hap_stats_Scaffold_ _ag.txt
+
+Rscript h12_recombcorrec.R recomb_ratebins.txt /scratch/midway3/espolston/garud_h12_agnat/dcgm_hap_stats_Scaffold_ _nat.txt
+
+#detect the h12 peaks for all
+#python H12peakFinder.py <output from h12_h1h2.py> -o <output name> can also use -t to define h12 cutoff
+for sc in {1..16}; do python /scratch/midway3/espolston/h12/H12peakFinder.py dcgm_hap_stats_Scaffold_${sc}_recombfiltered.txt -o /scratch/midway3/espolston/garud_h12/dcgm_hap_peaks_Scaffold_${sc}_recombfiltered.txt; done
+
+#detect the h12 peaks for ag
+for sc in {1..16}; do python /scratch/midway3/espolston/h12/H12peakFinder.py /scratch/midway3/espolston/garud_h12_agnat/dcgm_hap_stats_Scaffold_${sc}_recombfiltered_ag.txt -o /scratch/midway3/espolston/garud_h12_agnat/dcgm_hap_peaks_Scaffold_${sc}_recombfiltered_ag.txt; done
+
+#detect the h12 peaks for nat
+for sc in {1..16}; do python /scratch/midway3/espolston/h12/H12peakFinder.py /scratch/midway3/espolston/garud_h12_agnat/dcgm_hap_stats_Scaffold_${sc}_recombfiltered_nat.txt -o /scratch/midway3/espolston/garud_h12_agnat/dcgm_hap_peaks_Scaffold_${sc}_recombfiltered_nat.txt; done
