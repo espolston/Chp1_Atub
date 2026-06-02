@@ -84,6 +84,7 @@ pixy --stats fst \
   --vcf /project/kreiner/pairedenv_commongarden/allsites/droughtcgmerged_allsites_final_ID_IBD.vcf.gz \
   --populations /scratch/midway3/espolston/dcgm_all.txt \
   --window_size 50000000 \
+  --fst_components \
   --output_folder /scratch/midway3/espolston/allpair_50Mb_windows \
   --n_core 48
 
