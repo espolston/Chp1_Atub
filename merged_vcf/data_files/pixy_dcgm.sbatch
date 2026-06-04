@@ -80,13 +80,21 @@ parallel -j 17 'pixy --stats fst \
 #pair ag and nat compared to all other pair ag nat for 50 mb windows
 for p in {1..17}; do awk -v pa="$p" '{$3 = "pair_" pa "_" $2; print $1,$3}' dcgm_pair_$p.txt; done > dcgm_all.txt
 
+#had to run this with pixy2
+for CHROM in Scaffold_2 Scaffold_3 Scaffold_4 Scaffold_5 \
+             Scaffold_6 Scaffold_7 Scaffold_8 Scaffold_9 Scaffold_10 \
+             Scaffold_11 Scaffold_12 Scaffold_13 Scaffold_14 Scaffold_15 Scaffold_16; do
+
 pixy --stats fst \
   --vcf /project/kreiner/pairedenv_commongarden/allsites/droughtcgmerged_allsites_final_ID_IBD.vcf.gz \
   --populations /scratch/midway3/espolston/dcgm_all.txt \
+  --chromosomes $CHROM \
   --window_size 50000000 \
   --fst_components \
-  --output_folder /scratch/midway3/espolston/allpair_50Mb_windows \
-  --n_core 48
+  --chunk_size 5000 \  #changes how much held in memory
+  --output_folder /scratch/midway3/espolston/allpair_50Mb_${CHROM} \
+  --n_cores 8
+done
 
 #0 AND 4 FOLD DEGENERACY SITES
 #/project/kreiner/data/genome/degeneracy has 0 and 4 fold sites annotated with https://github.com/harvardinformatics/degenotate
