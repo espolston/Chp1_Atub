@@ -39,7 +39,7 @@ plink --bfile /scratch/midway3/espolston/vcf/binary_dcgm --fam /scratch/midway3/
 #Run pixy
 sbatch pixy_dcgm.sbatch 
 sh pixyrename.sh #editted names and downloaded and analysed in chp1_mergedvcf.Rmd
-IBD_2026.R #adapted from Julia but looks at ibd, I converted from her hudson fst to my pixy, all contrast on each chrom wc fst
+IBD_2026_wcfstpixy.R #adapted from Julia but looks at ibd, I converted from her hudson fst to my pixy, all contrast on each chrom wc fst
 
 #Whatshap as input to shapeit4 (phasing)
 #Made list of bams needed and new sample names in chp1_mergedvcf.Rmd
