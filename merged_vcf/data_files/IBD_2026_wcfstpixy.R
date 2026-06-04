@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
-# ibd_ibe_analysis.R
+# adapted from IBD_2026.R from Julia
 # Tests IBD (isolation by distance) and IBE (isolation by environment)
-# was using pairwise Hudson Fst, geographic distance, and environment (Ag vs Nat)
+# was using pairwise wc Fst, geographic distance, and environment (Ag vs Nat)
 #updated 6/2/26 for wc fst on each chrom
 
 #pop1_1 is pair 1, ag pop1_2 is pair 1, nat
@@ -11,14 +11,20 @@ library(geosphere)   # haversine distances
 library(vegan)       # mantel test
 library(ggplot2)
 
-# ── 0. Load pixy data to convert from hudson fst to wc 50 mb fst ─────────────
-fst_wc <- fread("/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/pixy/allpair_50Mb_windows", sep="\t", header=T)
+# ── 0. Load pixy data to convert from wc fst to wc 50 mb fst ─────────────
+fst_wc <- tibble("pop1" = character(), "pop2" = character(), "chromosome" = character(), "window_pos_1" = numeric(), "window_pos_2" = numeric(), "avg_wc_fst" = numeric(), "no_snps" = numeric(),	"wc_fst_a" = numeric(),	"wc_fst_b" = numeric(),	"wc_fst_c" = numeric())
+
+for(p in 1:16){
+  pix_file <- fread(paste("/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/pixy/pixy_fst_50Mb_Scaffold_", p, ".txt", sep = ""), sep="\t", header=T)
+  fst_wc <- fst_wc %>%
+    add_row("pop1" = pix_file$pop1, "pop2" = pix_file$pop2, "chromosome" = pix_file$chromosome, "window_pos_1" = pix_file$window_pos_1, "window_pos_2" = pix_file$window_pos_2, "avg_wc_fst" = pix_file$avg_wc_fst, "no_snps" = pix_file$no_snps,	"wc_fst_a" = pix_file$wc_fst_a,	"wc_fst_b" = pix_file$wc_fst_b,	"wc_fst_c" = pix_file$wc_fst_c)
+}
 
 #average over all chromosomes 
 fst_wc_avg <- fst_wc %>%
   mutate("contrast" = paste(pop1, "_", pop2, sep = "")) %>%
   group_by(contrast) %>%
-  summarise("wcfst_allscaf" = sum(wc_fst_a) / (sum(wc_fst_a) + sum(wc_fst_b) + sum(wc_fst_c))) %>%
+  summarise("wcfst_allscaf" = sum(wc_fst_a) / (sum(wc_fst_a) + sum(wc_fst_b) + sum(wc_fst_c)), "pop1" = first(pop1), "pop2" = first(pop2)) %>%
   ungroup()
 
 coords <- read_tsv("pop_coords.tsv")  # Pair_Env, Lat, Long, Environment
@@ -28,13 +34,13 @@ coords <- coords %>%
   mutate("Pair" = strsplit(Pair_Env, "_")[[1]][1], "Pair_num" = strsplit(Pair, "pop")[[1]][2], "Env" = case_when(
     Environment == 1 ~ "AG",
     Environment == 2 ~ "NAT"
-  ), "Pair_Env_final" = paste("pair", Pair_num, "_", Env, sep = "")) %>%
+  ), "Pair_Env_final" = paste("pair_", Pair_num, "_", Env, sep = "")) %>%
   ungroup()
 
 #I've update POP# -> pop#, Pair_Env -> Pair_Env_final, and now HUDSON_FST -> wcfst_allscaf
 
 # ── 1. Load data ─────────────────────────────────────────────────────────────
-setwd("/Users/libbypolston/Desktop/")
+#setwd("/Users/libbypolston/Desktop/")
 #fst <- read_tsv("fst_pairwise.fst.summary", comment = "#",
 #                col_names = c("POP1","POP2","HUDSON_FST"))
 
@@ -60,8 +66,8 @@ fst <- fst %>%
       Env1 == Env2 & Env1 == 2 ~ "Nat vs Nat",
       TRUE                      ~ "Ag vs Nat"
     ),
-    Pair1 = str_extract(pop1, "pair\\d+"),
-    Pair2 = str_extract(pop2, "pair\\d+")
+    Pair1 = str_extract(pop1, "pair_\\d+"),
+    Pair2 = str_extract(pop2, "pair_\\d+")
   ) %>%
   ungroup() %>%
   filter(Geo_km > 0, is.finite(Fst_lin))
@@ -235,7 +241,7 @@ cat(sprintf("Nat slope = %.4f, p = %.3f, R² = %.3f\n",
 
 
 # ── 7. Plots ─────────────────────────────────────────────────────────────────
-cols <- c("Ag vs Ag" = "#E41A1C", "Nat vs Nat" = "#377EB8")
+cols <- c("Ag vs Ag" = "#60CEACFF", "Nat vs Nat" = "#382A54FF")
 
 # ── Plot 1: IBD faceted by comparison type ───────────────────────────────────
 p_ibd <- ggplot(fst_same, aes(Geo_km, Fst_lin, colour = comp_type)) +
@@ -256,7 +262,8 @@ p_ibd <- ggplot(fst_same, aes(Geo_km, Fst_lin, colour = comp_type)) +
   theme_classic(base_size = 12) +
   theme(legend.position  = "none",
         strip.background = element_blank(),
-        strip.text       = element_text(face = "bold"))
+        strip.text       = element_text(face = "bold"), 
+        axis.text = element_text(size = 15))
 p_ibd
 ggsave("ibd_output/IBD_plot.pdf", p_ibd, width = 8, height = 4)
 ggsave("ibd_output/IBD_plot.png", p_ibd, width = 8, height = 4, dpi = 300)
@@ -282,7 +289,8 @@ p_ibd_overlay <- ggplot(fst_same, aes(Geo_km, Fst_lin, colour = comp_type)) +
        title = "Isolation by Distance") +
   theme_classic(base_size = 13) +
   theme(legend.position   = c(0.15, 0.85),
-        legend.background = element_blank()) +
+        legend.background = element_blank(), 
+        axis.text = element_text(size = 15)) +
   scale_x_continuous(
   trans  = "log",
   breaks = c(1, 10, 50, 100, 500, 1000),
@@ -309,7 +317,8 @@ p_ibe <- ggplot(fst_within, aes(x = 1, y = Fst_lin)) +
        subtitle = "Within-pair Ag vs Nat (geography controlled)") +
   theme_classic(base_size = 13) +
   theme(axis.text.x  = element_blank(),
-        axis.ticks.x = element_blank())
+        axis.ticks.x = element_blank(), 
+        axis.text = element_text(size = 15))
 p_ibe
 ggsave("ibd_output/IBE_plot.pdf", p_ibe, width = 4, height = 5)
 ggsave("ibd_output/IBE_plot.png", p_ibe, width = 4, height = 5, dpi = 300)
@@ -330,13 +339,13 @@ fst_heatmap <- fst %>%
 
 p_heatmap <- ggplot(fst_heatmap, aes(pop1, pop2, fill = wcfst_allscaf)) +
   geom_tile() +
-  scale_fill_viridis_c(option = "magma", name = expression(F[ST]),
+  scale_fill_viridis_c(option = "mako", name = expression(F[ST]),
                        limits = c(0, NA)) +
-  labs(x = NULL, y = NULL, title = "Pairwise Hudson Fst",
+  labs(x = NULL, y = NULL, title = "Pairwise wc Fst",
        subtitle = "Populations ordered west to east") +
   theme_classic(base_size = 10) +
-  theme(axis.text.x     = element_text(angle = 45, hjust = 1, size = 7),
-        axis.text.y     = element_text(size = 7),
+  theme(axis.text.x     = element_text(angle = 45, hjust = 1, size = 10),
+        axis.text.y     = element_text(size = 10),
         legend.position = "right",
         panel.grid      = element_blank())
 fst_heatmap
@@ -355,3 +364,4 @@ cat("  IBD_plot.pdf/png       — faceted by comparison type\n")
 cat("  IBD_overlay.pdf/png    — both env types overlaid\n")
 cat("  IBE_plot.pdf/png       — within-pair Ag vs Nat\n")
 cat("  Fst_heatmap.pdf/png    — all pairwise Fst, ordered west to east\n")
+
