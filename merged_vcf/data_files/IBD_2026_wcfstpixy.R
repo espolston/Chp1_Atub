@@ -27,7 +27,7 @@ fst_wc_avg <- fst_wc %>%
   summarise("wcfst_allscaf" = sum(wc_fst_a) / (sum(wc_fst_a) + sum(wc_fst_b) + sum(wc_fst_c)), "pop1" = first(pop1), "pop2" = first(pop2)) %>%
   ungroup()
 
-coords <- read_tsv("pop_coords.tsv")  # Pair_Env, Lat, Long, Environment
+coords <- read_tsv("/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/pop_coords.tsv")  # Pair_Env, Lat, Long, Environment
 
 coords <- coords %>%
   rowwise() %>%
@@ -265,8 +265,8 @@ p_ibd <- ggplot(fst_same, aes(Geo_km, Fst_lin, colour = comp_type)) +
         strip.text       = element_text(face = "bold"), 
         axis.text = element_text(size = 15))
 p_ibd
-ggsave("ibd_output/IBD_plot.pdf", p_ibd, width = 8, height = 4)
-ggsave("ibd_output/IBD_plot.png", p_ibd, width = 8, height = 4, dpi = 300)
+ggsave("/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/ibd_ouput/IBD_plot.pdf", p_ibd, width = 8, height = 4)
+ggsave("/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/ibd_ouput/IBD_plot.png", p_ibd, width = 8, height = 4, dpi = 300)
 
 # ── Plot 2: IBD both env types overlaid ──────────────────────────────────────
 p_ibd_overlay <- ggplot(fst_same, aes(Geo_km, Fst_lin, colour = comp_type)) +
@@ -299,8 +299,8 @@ p_ibd_overlay <- ggplot(fst_same, aes(Geo_km, Fst_lin, colour = comp_type)) +
 ) +
 coord_cartesian(ylim = c(0, NA))  # floor y at 0
 p_ibd_overlay
-ggsave("ibd_output/IBD_overlay.pdf", p_ibd_overlay, width = 6, height = 5)
-ggsave("ibd_output/IBD_overlay.png", p_ibd_overlay, width = 6, height = 5, dpi = 300)
+ggsave("/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/ibd_ouput/IBD_overlay.pdf", p_ibd_overlay, width = 6, height = 5)
+ggsave("/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/ibd_ouput/IBD_overlay.png", p_ibd_overlay, width = 6, height = 5, dpi = 300)
 
 # ── Plot 3: IBE — within-pair Ag vs Nat Fst ──────────────────────────────────
 p_ibe <- ggplot(fst_within, aes(x = 1, y = Fst_lin)) +
@@ -320,8 +320,8 @@ p_ibe <- ggplot(fst_within, aes(x = 1, y = Fst_lin)) +
         axis.ticks.x = element_blank(), 
         axis.text = element_text(size = 15))
 p_ibe
-ggsave("ibd_output/IBE_plot.pdf", p_ibe, width = 4, height = 5)
-ggsave("ibd_output/IBE_plot.png", p_ibe, width = 4, height = 5, dpi = 300)
+ggsave("/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/ibd_ouput/IBE_plot.pdf", p_ibe, width = 4, height = 5)
+ggsave("/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/ibd_ouput/IBE_plot.png", p_ibe, width = 4, height = 5, dpi = 300)
 
 # ── Plot 4: Fst heatmap ordered west to east by longitude ────────────────────
 pop_order <- coords %>%
@@ -350,15 +350,15 @@ p_heatmap <- ggplot(fst_heatmap, aes(pop1, pop2, fill = wcfst_allscaf)) +
         panel.grid      = element_blank())
 fst_heatmap
 p_heatmap
-ggsave("ibd_output/Fst_heatmap.pdf", p_heatmap, width = 9, height = 8)
-ggsave("ibd_output/Fst_heatmap.png", p_heatmap, width = 9, height = 8, dpi = 300)
+ggsave("/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/ibd_ouput/Fst_heatmap.pdf", p_heatmap, width = 9, height = 8)
+ggsave("/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/ibd_ouput/Fst_heatmap.png", p_heatmap, width = 9, height = 8, dpi = 300)
 
 # ── 8. Save results ───────────────────────────────────────────────────────────
-write_tsv(fst,        "ibd_output/ibd_ibe_pairwise.tsv")
-write_tsv(fst_same,   "ibd_output/ibd_same_env.tsv")
-write_tsv(fst_within, "ibd_output/ibe_within_pair.tsv")
+write_tsv(fst,        "/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/ibd_ouput/ibd_ibe_pairwise.tsv")
+write_tsv(fst_same,   "/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/ibd_ouput/ibd_same_env.tsv")
+write_tsv(fst_within, "/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/ibd_ouput/ibe_within_pair.tsv")
 
-cat("\nDone. Outputs in ibd_output/:\n")
+cat("\nDone. Outputs in /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/ibd_ouput/:\n")
 cat("  ibd_ibe_pairwise.tsv\n")
 cat("  IBD_plot.pdf/png       — faceted by comparison type\n")
 cat("  IBD_overlay.pdf/png    — both env types overlaid\n")
