@@ -81,7 +81,7 @@ parallel -j 17 'pixy --stats fst \
 for p in {1..17}; do awk -v pa="$p" '{$3 = "pair_" pa "_" $2; print $1,$3}' dcgm_pair_$p.txt; done > dcgm_all.txt
 
 #had to run this with pixy2
-for CHROM in Scaffold_2 Scaffold_3 Scaffold_4 Scaffold_5 \
+for CHROM in Scaffold_1 Scaffold_2 Scaffold_3 Scaffold_4 Scaffold_5 \
              Scaffold_6 Scaffold_7 Scaffold_8 Scaffold_9 Scaffold_10 \
              Scaffold_11 Scaffold_12 Scaffold_13 Scaffold_14 Scaffold_15 Scaffold_16; do
 
