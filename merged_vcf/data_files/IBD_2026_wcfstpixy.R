@@ -10,6 +10,7 @@ library(tidyverse)
 library(geosphere)   # haversine distances
 library(vegan)       # mantel test
 library(ggplot2)
+library(data.table)
 
 # ── 0. Load pixy data to convert from wc fst to wc 50 mb fst ─────────────
 fst_wc <- tibble("pop1" = character(), "pop2" = character(), "chromosome" = character(), "window_pos_1" = numeric(), "window_pos_2" = numeric(), "avg_wc_fst" = numeric(), "no_snps" = numeric(),	"wc_fst_a" = numeric(),	"wc_fst_b" = numeric(),	"wc_fst_c" = numeric())
@@ -81,6 +82,38 @@ fst_within <- fst %>% filter(Pair1 == Pair2, Env_diff == 1)
 
 cat(sprintf("\nIBD same-env pairs: %d\n", nrow(fst_same)))
 cat(sprintf("IBE within-pair comparisons: %d\n", nrow(fst_within)))
+
+#------- 4a. adding in fst by distance---------------
+#plotting like in /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/FST_genomewideavg_bypair.png
+#filter to just the within pair contrasts
+fst_within %>%
+  ggplot(aes(x = wcfst_allscaf, fill = T)) +
+  geom_density(alpha = 0.25, linewidth = 0.6) + scale_fill_manual(values = c("gray")) +
+  labs(x = "Mean FST") +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank(), axis.text = element_text(size = 15))
+
+#now plot fst vs distance
+dist_withinpair <- ggplot(fst_within, aes(x = wcfst_allscaf, y = Geo_km)) + geom_point() + labs(x = "Mean FST", y = "Distance (km)") + geom_smooth(method = "lm")
+ggsave("/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/ibd_output/Fst_withinpair_distance.png", dist_withinpair, width = 9, height = 8)
+
+#because above looked so bad
+dist <- ggplot(fst, aes(x = wcfst_allscaf, y = Geo_km)) + geom_point() + labs(x = "Mean FST", y = "Distance (km)") + geom_smooth(method = "lm")
+ggsave("/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/ibd_output/Fst_allpair_ibd_linear.png", dist, width = 9, height = 8)
+
+#compare fst of ag-ag and ag-nat of similar distances to each other 
+dist_bwpair <- ggplot(fst_same, aes(x = wcfst_allscaf, y = Geo_km)) + geom_point() + labs(x = "Mean FST", y = "Distance (km)", title = "Distance ~ Fst for ag-ag or nat-nat") + geom_smooth(method = "lm")
+ggsave("/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/ibd_output/Fst_samenv_ibd.png", dist_bwpair, width = 9, height = 8)
+
+fst_difhab <- fst %>% filter(Env_diff == 1) #both pair 1 ag- pair 1 nat and pair 1 ag - pair 2 nat ...
+
+dist_bwenv <- ggplot(fst_difhab, aes(x = wcfst_allscaf, y = Geo_km)) + geom_point() + labs(x = "Mean FST", y = "Distance (km)", title = "Distance ~ Fst for ag-nat of any pair") + geom_smooth(method = "lm")
+ggsave("/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/ibd_output/Fst_difenv_ibd.png", dist_bwenv, width = 9, height = 8)
+
+bwenv <- lm(Geo_km ~ wcfst_allscaf, fst_difhab)
+withinenv <- lm(Geo_km ~ wcfst_allscaf, fst_same)
+summary(bwenv)
+summary(withinenv)
 
 # ── 5. Mantel tests ───────────────────────────────────────────────────────────
 pops_same <- sort(unique(c(fst_same$pop1, fst_same$pop2)))
@@ -265,8 +298,8 @@ p_ibd <- ggplot(fst_same, aes(Geo_km, Fst_lin, colour = comp_type)) +
         strip.text       = element_text(face = "bold"), 
         axis.text = element_text(size = 15))
 p_ibd
-ggsave("/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/ibd_ouput/IBD_plot.pdf", p_ibd, width = 8, height = 4)
-ggsave("/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/ibd_ouput/IBD_plot.png", p_ibd, width = 8, height = 4, dpi = 300)
+ggsave("/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/ibd_output/IBD_plot.pdf", p_ibd, width = 8, height = 4)
+ggsave("/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/ibd_output/IBD_plot.png", p_ibd, width = 8, height = 4, dpi = 300)
 
 # ── Plot 2: IBD both env types overlaid ──────────────────────────────────────
 p_ibd_overlay <- ggplot(fst_same, aes(Geo_km, Fst_lin, colour = comp_type)) +
@@ -287,7 +320,7 @@ p_ibd_overlay <- ggplot(fst_same, aes(Geo_km, Fst_lin, colour = comp_type)) +
   labs(x = "Geographic distance (km)",
        y = expression(F[ST] / (1 - F[ST])),
        title = "Isolation by Distance") +
-  theme_classic(base_size = 13) +
+  theme_bw() +
   theme(legend.position   = c(0.15, 0.85),
         legend.background = element_blank(), 
         axis.text = element_text(size = 15)) +
@@ -299,8 +332,8 @@ p_ibd_overlay <- ggplot(fst_same, aes(Geo_km, Fst_lin, colour = comp_type)) +
 ) +
 coord_cartesian(ylim = c(0, NA))  # floor y at 0
 p_ibd_overlay
-ggsave("/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/ibd_ouput/IBD_overlay.pdf", p_ibd_overlay, width = 6, height = 5)
-ggsave("/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/ibd_ouput/IBD_overlay.png", p_ibd_overlay, width = 6, height = 5, dpi = 300)
+ggsave("/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/ibd_output/IBD_overlay.pdf", p_ibd_overlay, width = 6, height = 5)
+ggsave("/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/ibd_output/IBD_overlay.png", p_ibd_overlay, width = 6, height = 5, dpi = 300)
 
 # ── Plot 3: IBE — within-pair Ag vs Nat Fst ──────────────────────────────────
 p_ibe <- ggplot(fst_within, aes(x = 1, y = Fst_lin)) +
@@ -320,8 +353,8 @@ p_ibe <- ggplot(fst_within, aes(x = 1, y = Fst_lin)) +
         axis.ticks.x = element_blank(), 
         axis.text = element_text(size = 15))
 p_ibe
-ggsave("/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/ibd_ouput/IBE_plot.pdf", p_ibe, width = 4, height = 5)
-ggsave("/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/ibd_ouput/IBE_plot.png", p_ibe, width = 4, height = 5, dpi = 300)
+ggsave("/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/ibd_output/IBE_plot.pdf", p_ibe, width = 4, height = 5)
+ggsave("/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/ibd_output/IBE_plot.png", p_ibe, width = 4, height = 5, dpi = 300)
 
 # ── Plot 4: Fst heatmap ordered west to east by longitude ────────────────────
 pop_order <- coords %>%
@@ -337,6 +370,10 @@ fst_heatmap <- fst %>%
   mutate(pop1 = factor(pop1, levels = pop_order),
          pop2 = factor(pop2, levels = pop_order))
 
+#a couple that end up w neg fst and thats not showing up so set them to 0
+negrow <- which(fst_heatmap$wcfst_allscaf < 0)
+fst_heatmap$wcfst_allscaf[negrow] <- 0
+
 p_heatmap <- ggplot(fst_heatmap, aes(pop1, pop2, fill = wcfst_allscaf)) +
   geom_tile() +
   scale_fill_viridis_c(option = "mako", name = expression(F[ST]),
@@ -350,18 +387,20 @@ p_heatmap <- ggplot(fst_heatmap, aes(pop1, pop2, fill = wcfst_allscaf)) +
         panel.grid      = element_blank())
 fst_heatmap
 p_heatmap
-ggsave("/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/ibd_ouput/Fst_heatmap.pdf", p_heatmap, width = 9, height = 8)
-ggsave("/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/ibd_ouput/Fst_heatmap.png", p_heatmap, width = 9, height = 8, dpi = 300)
+ggsave("/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/ibd_output/Fst_heatmap.pdf", p_heatmap, width = 9, height = 8)
+ggsave("/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/ibd_output/Fst_heatmap.png", p_heatmap, width = 9, height = 8, dpi = 300)
 
 # ── 8. Save results ───────────────────────────────────────────────────────────
-write_tsv(fst,        "/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/ibd_ouput/ibd_ibe_pairwise.tsv")
-write_tsv(fst_same,   "/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/ibd_ouput/ibd_same_env.tsv")
-write_tsv(fst_within, "/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/ibd_ouput/ibe_within_pair.tsv")
+write_tsv(fst,        "/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/ibd_output/ibd_ibe_pairwise.tsv")
+write_tsv(fst_same,   "/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/ibd_output/ibd_same_env.tsv")
+write_tsv(fst_within, "/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/ibd_output/ibe_within_pair.tsv")
 
-cat("\nDone. Outputs in /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/ibd_ouput/:\n")
+cat("\nDone. Outputs in /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/ibd_output/:\n")
 cat("  ibd_ibe_pairwise.tsv\n")
 cat("  IBD_plot.pdf/png       — faceted by comparison type\n")
 cat("  IBD_overlay.pdf/png    — both env types overlaid\n")
 cat("  IBE_plot.pdf/png       — within-pair Ag vs Nat\n")
 cat("  Fst_heatmap.pdf/png    — all pairwise Fst, ordered west to east\n")
 
+
+#adding distance to fst plot
