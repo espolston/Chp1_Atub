@@ -60,4 +60,5 @@ sbatch H12_hapscan.sbatch
 
 #chp1_mergedvcf.Rmd has all off server work (MDS/PCA, IBD, phase prep, cmh)
 
+Afvaper_runs.R for AFvaper analyses
 
