@@ -61,8 +61,6 @@ sbatch H12_hapscan.sbatch
 #chp1_mergedvcf.Rmd has all off server work (MDS/PCA, IBD, phase prep, cmh)
 
 #Look at LD decay to determine window size for AFVaper
-ldrun.sbatch
-python3 /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Code/ld_decay_calc.py -i /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/dcgm_ld.ld.gz -o dcgm_lddecay
-#analyzed LD decay and got window size for afvaper in chp1_mergedvcf.Rmd
+ldrun.sbatch #analyzed LD decay and got window size for afvaper in chp1_mergedvcf.Rmd
 Afvaper_runs.R for AFvaper analyses
 
