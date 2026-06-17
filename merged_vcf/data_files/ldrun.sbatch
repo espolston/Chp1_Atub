@@ -14,3 +14,8 @@
 module load plink
 plink --bfile /scratch/midway2/espolston/binary_dcgm --fam /scratch/midway2/espolston/dcgm.fam --thin 0.1  --r2 gz --ld-window-kb 200 --ld-window-r2 0 --allow-extra-chr --allow-no-sex --make-founders --out dcgm_ld
 
+plink --bfile /scratch/midway2/espolston/binary_dcgm --fam /scratch/midway2/espolston/dcgm.fam --thin 0.5  --r2 gz --ld-window-kb 200 --ld-window-r2 0 --allow-extra-chr --allow-no-sex --make-founders --out dcgm_ld.5
+
+module load python/3.8.0 
+python3 ld_decay_calc.py -i dcgm_ld.ld.gz -o dcgm_lddecay
+python3 ld_decay_calc.py -i dcgm_ld.5.ld.gz -o dcgm_lddecay_.5
