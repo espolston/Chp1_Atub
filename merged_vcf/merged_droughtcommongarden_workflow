@@ -66,3 +66,6 @@ Afvaper_runs.R for AFvaper analyses
 
 #Looking at diversity plot and if ag-nat dif is dif then expected from AF matched null
 divperms.sbatch
+
+#xpehh and cmh overlap run sh on local for bedtools and then into chp1 rmd again
+xpehh_cmh_overlap.sh
