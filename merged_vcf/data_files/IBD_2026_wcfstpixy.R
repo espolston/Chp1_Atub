@@ -28,17 +28,23 @@ fst_wc_avg <- fst_wc %>%
   summarise("wcfst_allscaf" = sum(wc_fst_a) / (sum(wc_fst_a) + sum(wc_fst_b) + sum(wc_fst_c)), "pop1" = first(pop1), "pop2" = first(pop2)) %>%
   ungroup()
 
-coords <- read_tsv("/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/pop_coords.tsv")  # Pair_Env, Lat, Long, Environment
+#I took out this coords because i think the coordinates are wrong and then numbers -> ag or nat I think are flipped???
+#coords <- read_tsv("/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/pop_coords.tsv")  # Pair_Env, Lat, Long, Environment
+#coords <- coords %>%
+#  rowwise() %>%
+#  mutate("Pair" = strsplit(Pair_Env, "_")[[1]][1], "Pair_num" = strsplit(Pair, "pop")[[1]][2], "Env" = case_when(
+#    Environment == 1 ~ "AG",
+#    Environment == 2 ~ "NAT"
+#  ), "Pair_Env_final" = paste("pair_", Pair_num, "_", Env, sep = "")) %>%
+#  ungroup()
+#I've update POP# -> pop#, Pair_Env -> Pair_Env_final, and now HUDSON_FST -> wcfst_allscaf
 
+#using coords from https://docs.google.com/spreadsheets/d/1XN9sKfZL9NgFWdRhXZCtK0cyJifjuPaeXkcjWryU5K4/edit?gid=0#gid=0
+coords <- read_tsv("/Users/libbypolston/Desktop/Popcoordinates.tsv")
 coords <- coords %>%
   rowwise() %>%
-  mutate("Pair" = strsplit(Pair_Env, "_")[[1]][1], "Pair_num" = strsplit(Pair, "pop")[[1]][2], "Env" = case_when(
-    Environment == 1 ~ "AG",
-    Environment == 2 ~ "NAT"
-  ), "Pair_Env_final" = paste("pair_", Pair_num, "_", Env, sep = "")) %>%
+  mutate("Pair_Env_final" = paste("pair_", Pair, "_", Env, sep = "")) %>%
   ungroup()
-
-#I've update POP# -> pop#, Pair_Env -> Pair_Env_final, and now HUDSON_FST -> wcfst_allscaf
 
 # ── 1. Load data ─────────────────────────────────────────────────────────────
 #setwd("/Users/libbypolston/Desktop/")
@@ -50,9 +56,11 @@ coords <- coords %>%
 # ── 2. Attach coordinates and environment to each population pair ─────────────
 fst <- fst_wc_avg %>%
   left_join(coords, by = c("pop1" = "Pair_Env_final")) %>%
-  rename(Lat1 = Lat, Long1 = Long, Env1 = Environment) %>%
+  #rename(Lat1 = Lat, Long1 = Long, Env1 = Environment) %>%
+  rename(Lat1 = Lat, Long1 = Long, Env1 = Env, Pair1 = Pair) %>%
   left_join(coords, by = c("pop2" = "Pair_Env_final")) %>%
-  rename(Lat2 = Lat, Long2 = Long, Env2 = Environment)
+  rename(Lat2 = Lat, Long2 = Long, Env2 = Env, Pair2 = Pair)
+  #rename(Lat2 = Lat, Long2 = Long, Env2 = Environment)
 
 # ── 3. Compute geographic distance (haversine, km) ───────────────────────────
 fst <- fst %>%
@@ -63,8 +71,8 @@ fst <- fst %>%
     Fst_lin  = pmax(wcfst_allscaf, 0) / (1 - pmax(wcfst_allscaf, 0)),
     Env_diff = as.integer(Env1 != Env2),
     comp_type = case_when(
-      Env1 == Env2 & Env1 == 1 ~ "Ag vs Ag",
-      Env1 == Env2 & Env1 == 2 ~ "Nat vs Nat",
+      Env1 == Env2 & Env1 == "AG" ~ "Ag vs Ag",
+      Env1 == Env2 & Env1 == "NAT" ~ "Nat vs Nat",
       TRUE                      ~ "Ag vs Nat"
     ),
     Pair1 = str_extract(pop1, "pair_\\d+"),
@@ -93,27 +101,91 @@ fst_within %>%
   theme_bw() +
   theme(panel.grid.minor = element_blank(), axis.text = element_text(size = 15))
 
-#now plot fst vs distance
-dist_withinpair <- ggplot(fst_within, aes(x = wcfst_allscaf, y = Geo_km)) + geom_point() + labs(x = "Mean FST", y = "Distance (km)") + geom_smooth(method = "lm")
-ggsave("/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/ibd_output/Fst_withinpair_distance.png", dist_withinpair, width = 9, height = 8)
+fst_difhab <- fst %>% filter(Env_diff == 1) #both pair 1 ag- pair 1 nat and pair 1 ag - pair 2 nat ...
 
-#because above looked so bad
-dist <- ggplot(fst, aes(x = wcfst_allscaf, y = Geo_km)) + geom_point() + labs(x = "Mean FST", y = "Distance (km)") + geom_smooth(method = "lm")
+fst_agag <- fst_same %>% filter(Env1 == "AG")
+fst_natnat <- fst_same %>% filter(Env1 == "NAT")
+
+#get between all slope, within env, between env slopes
+anyenv <- lm(wcfst_allscaf ~ Geo_km, fst)
+bwenv <- lm(wcfst_allscaf ~ Geo_km, fst_difhab)
+withinenv <- lm(wcfst_allscaf ~ Geo_km, fst_same)
+withinenv_ag <- lm(wcfst_allscaf ~ Geo_km, fst_agag)
+withinenv_nat <- lm(wcfst_allscaf ~ Geo_km, fst_natnat)
+
+#compare fit with geom_smooth(method="loess") geom_smooth(method="gam") and lm
+anyenv_loess <- loess(wcfst_allscaf ~ Geo_km, fst)
+bwenv_loess <- loess(wcfst_allscaf ~ Geo_km, fst_difhab)
+withinenv_loess <- loess(wcfst_allscaf ~ Geo_km, fst_same)
+withinenv_ag_loess <- loess(wcfst_allscaf ~ Geo_km, fst_agag)
+withinenv_nat_loess <- loess(wcfst_allscaf ~ Geo_km, fst_natnat)
+
+library(mgcv)
+anyenv_gam <- gam(wcfst_allscaf ~ Geo_km, data = fst)
+bwenv_gam <- gam(wcfst_allscaf ~ Geo_km, data = fst_difhab)
+withinenv_gam <- gam(wcfst_allscaf ~ Geo_km, data = fst_same)
+withinenv_ag_gam <- gam(wcfst_allscaf ~ Geo_km, data = fst_agag)
+withinenv_nat_gam <- gam(wcfst_allscaf ~ Geo_km, data = fst_natnat)
+
+loessRsq <- function(model_obj, dataset){
+  y_obs <- dataset$wcfst_allscaf
+  y_mean <- mean(y_obs)
+  
+  tss <- sum((y_obs - y_mean)^2)
+  
+  rss_loess <- sum(residuals(model_obj)^2)
+  r2_loess <- 1 - (rss_loess / tss)
+  
+  return(r2_loess)
+  
+  #to check correct method
+  #r2_lm    <- 1 - (rss_lm / tss)
+  #rss_lm <- sum(residuals(anyenv)^2) 
+}
+
+summary(anyenv) #rsq = 0.3725
+loessRsq(anyenv_loess, fst) #.386
+summary(anyenv_gam) #rsq = .371
+
+summary(bwenv) #rsq = 0.3752
+loessRsq(bwenv_loess, fst_difhab) #.389
+summary(bwenv_gam) #rsq = 0.373
+
+summary(withinenv) #rsq = 0.372
+loessRsq(withinenv_loess, fst_same) #.383
+summary(withinenv_gam) #rsq = 0.37
+
+summary(withinenv_ag) #rsq = 0.3484
+loessRsq(withinenv_ag_loess, fst_agag) #.358
+summary(withinenv_ag_gam) #rsq = 0.344
+
+summary(withinenv_nat) #rsq = 0.4096
+loessRsq(withinenv_nat_loess, fst_natnat) #.436
+summary(withinenv_nat_gam) #rsq = 0.405
+
+#best model is loess
+
+#now plot fst vs distance
+#dist_withinpair <- ggplot(fst_within, aes(x = Geo_km, y = wcfst_allscaf)) + geom_point() + labs(x = "Mean FST", y = "Distance (km)") 
+#ggsave("/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/ibd_output/Fst_withinpair_distance.png", dist_withinpair, width = 9, height = 8)
+
+#because above looked so bad go to between all ag-nat, ag-ag, nat-nat pairs
+#dist <- ggplot(fst, aes(x = Geo_km, y = wcfst_allscaf)) + geom_point() + labs(y = "Mean FST", x = "Distance (km)", title = "Fst ~ Distance for all ag-nat, ag-ag, nat-nat pairs") + geom_abline(aes(intercept = coef(anyenv)[1], slope = coef(anyenv)[2], color = "All pairs")) + geom_abline(aes(intercept = coef(bwenv)[1], slope = coef(bwenv)[2], color = "Ag-nat pairs")) + geom_abline(aes(intercept = coef(withinenv)[1], slope = coef(withinenv)[2], color = "Same env pairs"))
+
+#ggplot(fst, aes(x = Geo_km, y = wcfst_allscaf, color=comp_type)) + geom_point() + geom_smooth(method="gam") + labs(y = "Mean FST", x = "Distance (km)", title = "Fst ~ Distance for all ag-nat, ag-ag, nat-nat pairs") 
+  
+#ggsave("/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/ibd_output/Fst_allpair_ibd_linear.png", dist, width = 9, height = 8)
+
+dist <- ggplot(fst, aes(x = Geo_km, y = wcfst_allscaf, color = comp_type)) + geom_point() + labs(y = "Mean FST", x = "Distance (km)", title = "Fst ~ Distance for all ag-nat, ag-ag, nat-nat pairs") + geom_smooth(method="loess")
 ggsave("/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/ibd_output/Fst_allpair_ibd_linear.png", dist, width = 9, height = 8)
 
 #compare fst of ag-ag and ag-nat of similar distances to each other 
-dist_bwpair <- ggplot(fst_same, aes(x = wcfst_allscaf, y = Geo_km)) + geom_point() + labs(x = "Mean FST", y = "Distance (km)", title = "Distance ~ Fst for ag-ag or nat-nat") + geom_smooth(method = "lm")
+dist_bwpair <- ggplot(fst_same, aes(x = Geo_km, y = wcfst_allscaf, color = comp_type)) + geom_point() + labs(y = "Mean FST", x = "Distance (km)", title = "Fst ~ Distance for ag-ag or nat-nat \nDashed line is any within env comparison") + geom_smooth(method="loess") + geom_smooth(data = fst_same, aes(x = Geo_km, y = wcfst_allscaf),method = "loess", inherit.aes = FALSE, color = "black", linetype = "dashed")
 ggsave("/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/ibd_output/Fst_samenv_ibd.png", dist_bwpair, width = 9, height = 8)
 
-fst_difhab <- fst %>% filter(Env_diff == 1) #both pair 1 ag- pair 1 nat and pair 1 ag - pair 2 nat ...
-
-dist_bwenv <- ggplot(fst_difhab, aes(x = wcfst_allscaf, y = Geo_km)) + geom_point() + labs(x = "Mean FST", y = "Distance (km)", title = "Distance ~ Fst for ag-nat of any pair") + geom_smooth(method = "lm")
+#ag-nat of any pair
+dist_bwenv <- ggplot(fst_difhab, aes(x = Geo_km, y = wcfst_allscaf, color = comp_type)) + geom_point() + labs(y = "Mean FST", x = "Distance (km)", title = "Fst ~ Distance for ag-nat of any pair") + geom_smooth(method="loess")
 ggsave("/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/ibd_output/Fst_difenv_ibd.png", dist_bwenv, width = 9, height = 8)
-
-bwenv <- lm(Geo_km ~ wcfst_allscaf, fst_difhab)
-withinenv <- lm(Geo_km ~ wcfst_allscaf, fst_same)
-summary(bwenv)
-summary(withinenv)
 
 # ── 5. Mantel tests ───────────────────────────────────────────────────────────
 pops_same <- sort(unique(c(fst_same$pop1, fst_same$pop2)))
