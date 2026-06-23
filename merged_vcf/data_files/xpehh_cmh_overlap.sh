@@ -37,5 +37,30 @@ for sc in {1..16}; do
 cat /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/window_cmh_* > /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/window_cmh_all.txt
 cat /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/window_xpehh_* > /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/window_xpehh_all.txt
 
-for sc in {1..16}; do rm dcgm_sig_${sc}_AF 
-rm dcgm_10kbsites_${sc}_AF; done
+
+#check which of the cmh windows are the clumped sites
+#clump_loci <- fread("/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/clumphits_dcgm.txt")
+awk 'BEGIN{OFS="\t"} NR > 1 {$6 = $2+1; print $1,$2,$6,$3}' /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/clumphits_dcgm.txt > /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/clumpcmhhits_dcgm.bed
+
+for sc in {1..16}; do 
+#filter by scaf and then remove tab at end of line
+	awk -v scaf=${sc} 'BEGIN{OFS="\t"; target=scaf} $1 == target {sub(/\t+$/, ""); $5 = "Scaffold_" scaf; print $5,$2,$3,$4}' /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/clumpcmhhits_dcgm.bed > /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/cmh_${sc}.bed
+	awk -v scaf=${sc} 'BEGIN{OFS="\t"; target="Scaffold_" scaf} $1 == target {sub(/\t+$/, ""); print $1,$2,$3}' /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/dcgm_10kbsites.bed > /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/windows_${sc}.bed
+	
+	#sort by pos
+	sort -k1,1 -k2,2n /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/cmh_${sc}.bed > /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/cmh_${sc}_sort.bed
+	sort -k1,1 -k2,2n /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/windows_${sc}.bed > /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/windows_${sc}_sort.bed
+	
+	#Get how many hits of cmh and xpehh are within a 10 kb window
+	bedtools map -a /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/windows_${sc}_sort.bed -b /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/cmh_${sc}_sort.bed -c 2 -o count > /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/window_clumpcmh_${sc}.bed
+	
+	rm /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/cmh_${sc}* /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/windows_${sc}*; done
+
+cat /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/window_clumpcmh_* > /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/window_clumpcmh_all.txt
+
+
+#Run clumping on xpehh on cluster
+#raw p cutoffs from chp1_mergedvcf.Rmd (after nonclumped manhattan plots)
+#--clump-p1 from xpehh cutoff of + or - 5 (took max pvalue from zscore) --clump-p2 from xpehh cutoff of + or - 2
+module load plink
+plink --bfile /scratch/midway3/espolston/binary_dcgm --fam /scratch/midway3/espolston/dcgm.fam --clump /scratch/midway3/espolston/xpehh_plink --clump-p1 .0000005732734 --clump-kb 1000 --clump-r2 0.04550026 --clump-field pval --allow-no-sex --allow-extra-chr --clump-snp-field locus_id --make-founders --out /scratch/midway3/espolston/clumped_dcgm_xpehh
