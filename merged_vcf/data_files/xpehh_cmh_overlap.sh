@@ -39,24 +39,31 @@ cat /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/
 
 
 #check which of the cmh windows are the clumped sites
+#chrom, pos 1, pos 2, pval
 #clump_loci <- fread("/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/clumphits_dcgm.txt")
 awk 'BEGIN{OFS="\t"} NR > 1 {$6 = $2+1; print $1,$2,$6,$3}' /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/clumphits_dcgm.txt > /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/clumpcmhhits_dcgm.bed
+#xpehhclump <- fread("/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/clumped_dcgm_xpehh.clumped")
+awk 'BEGIN{OFS="\t"} NR > 1 {$13 = $4+1; print $1,$4,$13,$5}' /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/clumped_dcgm_xpehh.clumped > /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/clumpxpehhhits_dcgm.bed
 
 for sc in {1..16}; do 
 #filter by scaf and then remove tab at end of line
 	awk -v scaf=${sc} 'BEGIN{OFS="\t"; target=scaf} $1 == target {sub(/\t+$/, ""); $5 = "Scaffold_" scaf; print $5,$2,$3,$4}' /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/clumpcmhhits_dcgm.bed > /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/cmh_${sc}.bed
+	awk -v scaf=${sc} 'BEGIN{OFS="\t"; target="Scaffold_" scaf} $1 == target {sub(/\t+$/, ""); print $1,$2,$3,$4}' /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/clumpxpehhhits_dcgm.bed > /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/xpehh_${sc}.bed
 	awk -v scaf=${sc} 'BEGIN{OFS="\t"; target="Scaffold_" scaf} $1 == target {sub(/\t+$/, ""); print $1,$2,$3}' /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/dcgm_10kbsites.bed > /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/windows_${sc}.bed
 	
 	#sort by pos
 	sort -k1,1 -k2,2n /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/cmh_${sc}.bed > /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/cmh_${sc}_sort.bed
+	sort -k1,1 -k2,2n /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/xpehh_${sc}.bed > /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/xpehh_${sc}_sort.bed
 	sort -k1,1 -k2,2n /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/windows_${sc}.bed > /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/windows_${sc}_sort.bed
 	
 	#Get how many hits of cmh and xpehh are within a 10 kb window
 	bedtools map -a /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/windows_${sc}_sort.bed -b /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/cmh_${sc}_sort.bed -c 2 -o count > /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/window_clumpcmh_${sc}.bed
+	bedtools map -a /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/windows_${sc}_sort.bed -b /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/xpehh_${sc}_sort.bed -c 2 -o count > /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/window_clumpxpehh_${sc}.bed
 	
-	rm /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/cmh_${sc}* /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/windows_${sc}*; done
+	rm /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/cmh_${sc}* /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/xpehh_${sc}* /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/windows_${sc}*; done
 
 cat /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/window_clumpcmh_* > /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/window_clumpcmh_all.txt
+cat /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/window_clumpxpehh_* > /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/window_clumpxpehh_all.txt
 
 
 #Run clumping on xpehh on cluster
