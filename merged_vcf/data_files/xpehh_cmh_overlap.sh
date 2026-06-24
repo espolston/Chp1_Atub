@@ -39,6 +39,12 @@ cat /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/
 
 
 #check which of the cmh windows are the clumped sites
+#Run clumping on xpehh on cluster
+#raw p cutoffs from chp1_mergedvcf.Rmd (after nonclumped manhattan plots)
+#--clump-p1 from xpehh cutoff of + or - 5 (took max pvalue from zscore) --clump-p2 from xpehh cutoff of + or - 2
+module load plink
+plink --bfile /scratch/midway3/espolston/binary_dcgm --fam /scratch/midway3/espolston/dcgm.fam --clump /scratch/midway3/espolston/xpehh_plink --clump-p1 .0000005732734 --clump-kb 1000 --clump-r2 0.04550026 --clump-field pval --allow-no-sex --allow-extra-chr --clump-snp-field locus_id --make-founders --out /scratch/midway3/espolston/clumped_dcgm_xpehh
+
 #chrom, pos 1, pos 2, pval
 #clump_loci <- fread("/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/clumphits_dcgm.txt")
 awk 'BEGIN{OFS="\t"} NR > 1 {$6 = $2+1; print $1,$2,$6,$3}' /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/clumphits_dcgm.txt > /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/clumpcmhhits_dcgm.bed
@@ -65,9 +71,13 @@ for sc in {1..16}; do
 cat /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/window_clumpcmh_* > /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/window_clumpcmh_all.txt
 cat /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/window_clumpxpehh_* > /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/window_clumpxpehh_all.txt
 
+#look at 264 only windows
+for sc in {1..16}; do 
+	awk -v scaf=${sc} 'BEGIN{OFS="\t"; target="Scaffold_" scaf} $1 == target {sub(/\t+$/, ""); print $1,$2,$3}' /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/clumpxpehhhits_dcgm.bed > /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/onlyxpehhclumphits_${sc}.txt
+	awk -v scaf=${sc} 'BEGIN{OFS="\t"; target="Scaffold_" scaf} $1 == target {sub(/\t+$/, ""); print $1,$2,$3}' /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/onlyxpehhclump_windows.txt > /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/clumpxpehhhits_windows_${sc}.bed
+	sort -k1,1 -k2,2n /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/onlyxpehhclumphits_${sc}.txt > /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/clumpxpehhhits_dcgm_sort_${sc}.bed
+	sort -k1,1 -k2,2n /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/clumpxpehhhits_windows_${sc}.bed > /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/clumpxpehhhits_windows_sort_${sc}.txt
 
-#Run clumping on xpehh on cluster
-#raw p cutoffs from chp1_mergedvcf.Rmd (after nonclumped manhattan plots)
-#--clump-p1 from xpehh cutoff of + or - 5 (took max pvalue from zscore) --clump-p2 from xpehh cutoff of + or - 2
-module load plink
-plink --bfile /scratch/midway3/espolston/binary_dcgm --fam /scratch/midway3/espolston/dcgm.fam --clump /scratch/midway3/espolston/xpehh_plink --clump-p1 .0000005732734 --clump-kb 1000 --clump-r2 0.04550026 --clump-field pval --allow-no-sex --allow-extra-chr --clump-snp-field locus_id --make-founders --out /scratch/midway3/espolston/clumped_dcgm_xpehh
+	bedtools map -a /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/clumpxpehhhits_windows_sort_${sc}.txt -b /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/clumpxpehhhits_dcgm_sort_${sc}.bed -c 2 -o collapse > /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/onlyxpehhclump_sites_${sc}.txt; done
+	
+cat /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/onlyxpehhclump_sites_* > /Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/onlyxpehhclump_sites.txt
