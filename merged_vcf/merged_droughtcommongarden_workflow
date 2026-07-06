@@ -62,6 +62,8 @@ sbatch H12_hapscan.sbatch
 
 #Look at LD decay to determine window size for AFVaper
 ldrun.sbatch #analyzed LD decay and got window size for afvaper in chp1_mergedvcf.Rmd
+
+Afvaper.sbatch
 Afvaper_runs.R for AFvaper analyses
 
 #Looking at diversity plot and if ag-nat dif is dif then expected from AF matched null
