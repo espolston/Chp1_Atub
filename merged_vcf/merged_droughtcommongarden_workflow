@@ -71,3 +71,6 @@ divperms.sbatch
 
 #xpehh and cmh overlap run sh on local for bedtools and then into chp1 rmd again
 xpehh_cmh_overlap.sh
+
+#Sampling map plotting
+MapPlotting_Figure1.R
