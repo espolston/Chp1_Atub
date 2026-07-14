@@ -8,6 +8,7 @@
   # install.packages(c("data.table", "memuse", "vcfR"))
   # install.packages("remotes",repos = "http://cran.us.r-project.org")
   # remotes::install_github("JimWhiting91/afvaper")
+  # install.packages(c("ragg", "systemfonts", "textshaping"))
 
 #to get installed on cluster (midway)
 #on command line: git clone https://github.com/JimWhiting91/afvaper.git 
@@ -89,7 +90,7 @@ chr_perms <- data.frame(chr=genome_fai$chr,
 
 # This gives us approximately 10000 null perms in total, distributed across the genome according to relative size of chromosomes...
 
-all_chr_res <- lapply(16:16,function(i){
+all_chr_res <- lapply(1:16,function(i){
   vcf_in <- read.vcfR(paste("/scratch/espolston/new_phased/phased_dcgm_Scaffold_", i, "_newhead.vcf.gz", sep = ""), verbose = F)
   
   chr_AF_input <- calc_AF_vectors(vcf = vcf_in,
@@ -105,14 +106,14 @@ all_chr_res <- lapply(16:16,function(i){
                                     n_cores = 4,
                                     null_perms = chr_perms$perms[i],
                                     data_type = "vcf")
-  print(paste("scaffold ", i, "done"))
+  cat(paste("scaffold ", i, "done\n"), file = "/scratch/espolston/afvaper_output.txt", append = TRUE)
   
   return(list(chr_AF_input,chr_null_input))
 })
 
 saveRDS(all_chr_res, "/scratch/espolston/afvapr/all_chr_res.txt")
 #all_chr_res <- readRDS("/scratch/espolston/afvapr/all_chr_res.txt")
-  print("merged res file done")
+  cat("merged res file done\n", file = "/scratch/espolston/afvaper_output.txt", append = TRUE)
   
   AF_input <- merge_eigen_res(lapply(all_chr_res,'[[',1))
   null_input <- merge_eigen_res(lapply(all_chr_res,'[[',2))
@@ -128,7 +129,7 @@ saveRDS(all_chr_res, "/scratch/espolston/afvapr/all_chr_res.txt")
   
   saveRDS(eigen_res, "/scratch/espolston/afvapr/Afvaper_eigenresiduals.txt")
   #eigen_res <- readRDS("/scratch/espolston/afvapr/Afvaper_eigenresiduals.txt")
-  print("eigen file done")
+  cat("eig file done\n", file = "/scratch/espolston/afvaper_output.txt", append = TRUE)
   
   # View eigenvalue distribution of first matrix
   #eigen_res[[1]]$eigenvals
@@ -149,7 +150,7 @@ saveRDS(all_chr_res, "/scratch/espolston/afvapr/all_chr_res.txt")
   # Showpvals
   #head(pvals)
   saveRDS(pvals, "/scratch/espolston/afvapr/Afvaper_pvals.txt")
-  print("p file done")
+  cat("p file file done\n", file = "/scratch/espolston/afvaper_output.txt", append = TRUE)
   
   #------ Plot eigenvalues along chromosome -------
   library(ggplot2)
@@ -158,24 +159,25 @@ saveRDS(all_chr_res, "/scratch/espolston/afvapr/all_chr_res.txt")
   
   # Show the plots for eigenvalue 1
   eigenval_all <- all_plots[[1]] + ggtitle("Raw eigenvalues for Eig 1 w 90% cutoff")
-  #ggsave("/scratch/espolston/afvapr/afvapr_eigenvalfig.png", eigenval_all, device = "png", dpi = 300, height = 6, width = 10, units = "in")
+  ggsave("/scratch/espolston/afvapr/afvapr_eigenvalfig.png", eigenval_all, device = "png", dpi = 300, height = 6, width = 10, units = "in")
   #problems with randi ggsave version
-  ggsave("/scratch/espolston/afvapr/afvapr_eigenvalfig.png",
-         eigenval_all, dpi = 300, height = 6, width = 10, units = "in",
-         device = function(filename, width, height, ...) {
-           grDevices::png(filename, width = width, height = height, res = 300, type = "cairo", ...)
-         })
+  #ggsave("/scratch/espolston/afvapr/afvapr_eigenvalfig.png",
+  #       eigenval_all, dpi = 300, height = 6, width = 10, units = "in",
+  #       device = function(filename, width, height, ...) {
+  #         grDevices::png(filename, width = width, height = height, res = 300, type = "cairo", ...)
+  #       })
   
   # Plot empirical p-values, -log10(p) of 2 ~ p=0.01, 3 ~ p=0.001 etc.
   all_plots_p <- eigenval_plot(eigen_res,null_vectors = null_input,plot.pvalues = T)
   
   # Show the plots for eigenvalue 1
   allchr_plot <- all_plots_p[[1]] + ggtitle("Empirical pvalues for Eig 1") 
-  #ggsave(allchr_plot, file= "/scratch/espolston/afvapr/afvapr_pvalfig.png", device = "png", dpi = 300, height = 6, width = 10, units = "in")
+  ggsave(allchr_plot, file= "/scratch/espolston/afvapr/afvapr_pvalfig.png", device = "png", dpi = 300, height = 6, width = 10, units = "in")
+  
   #problems with randi ggsave
-  ggsave(allchr_plot, file= "/scratch/espolston/afvapr/afvapr_pvalfig.png", dpi = 300, height = 6, width = 10, units = "in", device = function(filename, width, height, ...) {
-           grDevices::png(filename, width = width, height = height, res = 300, type = "cairo", ...)
-         })
+  #ggsave(allchr_plot, file= "/scratch/espolston/afvapr/afvapr_pvalfig.png", dpi = 300, height = 6, width = 10, units = "in", device = function(filename, width, height, ...) {
+  #         grDevices::png(filename, width = width, height = height, res = 300, type = "cairo", ...)
+  #       })
   
   #------ Pull Significant windows -------
   
@@ -186,8 +188,9 @@ saveRDS(all_chr_res, "/scratch/espolston/afvapr/all_chr_res.txt")
   #significant_windows
   
   saveRDS(significant_windows, file ="/scratch/espolston/afvapr/afvapr_sigwindows.txt")
-  #significant_windows <- readRDS("path/to/file.rds")
-  print("sig win file done")
+  #significant_windows <- readRDS("/scratch/espolston/afvapr/afvapr_sigwindows.txt")
+  cat("sigwin file done\n", file = "/scratch/espolston/afvaper_output.txt", append = TRUE)
+  
   
   significant_windows <- signif_eigen_windows(eigen_res,null_cutoffs[,"95%"])
   saveRDS(significant_windows, file ="/scratch/espolston/afvapr/afvapr_sigwindows_95.txt")
@@ -205,7 +208,8 @@ saveRDS(all_chr_res, "/scratch/espolston/afvapr/all_chr_res.txt")
   head(eig1_parallel)
   
   write.table(eig1_parallel, file = "/scratch/espolston/afvapr/afvapr_eig1_parallel.txt", quote = F, row.names = F)
-  print("eig file done")  
+  cat("eig file done\n", file = "/scratch/espolston/afvaper_output.txt", append = TRUE)
+  
   
   #For outliers on eigenvectors 2+ we have an additional eigenvalue_sum column that describes the sum of eigenvalues 1 + 2, as well as the individual eigenvalue 1 and eigenvalue 2 scores for every window. These tell us that most of these windows are exhibiting a signature closer to full-parallelism (large eigenvalue 1) rather than multi-parallelism (more balanced eigenvalue 1 + 2), which is expected for this simulation (these regions are around the focal 10 Mb fully parallel sweep).
   eig2_parallel <- summarise_window_parallelism(window_id = significant_windows[[2]],
@@ -216,7 +220,7 @@ saveRDS(all_chr_res, "/scratch/espolston/afvapr/all_chr_res.txt")
   head(eig2_parallel)
   
   write.table(eig2_parallel, file = "/scratch/espolston/afvapr/afvapr_eig2_parallel.txt", quote = F, row.names = F)
-  print("eig file done")
+  cat("eig file done\n", file = "/scratch/espolston/afvaper_output.txt", append = TRUE)
   
   #------ Explore candidate regions -------
   # Fetch an A matrix
@@ -233,11 +237,11 @@ saveRDS(all_chr_res, "/scratch/espolston/afvapr/all_chr_res.txt")
     geom_point()+
     labs(y="Eig1 Score",x="Pos (bp)") + ggtitle("Candidate regions eig 1")
   
-  #ggsave(to_plot2, file = "/scratch/espolston/afvapr/afvapr_candidatefig.png", device = "png", dpi = 300, height = 6, width = 10, units = "in")
+  ggsave(to_plot2, file = "/scratch/espolston/afvapr/afvapr_candidatefig.png", device = "png", dpi = 300, height = 6, width = 10, units = "in")
   
   #problems with randi ggsave
-  ggsave(to_plot2, file = "/scratch/espolston/afvapr/afvapr_candidatefig.png", dpi = 300, height = 6, width = 10, units = "in", device = function(filename, width, height, ...) {
-    grDevices::png(filename, width = width, height = height, res = 300, type = "cairo", ...)
-  })
+  #ggsave(to_plot2, file = "/scratch/espolston/afvapr/afvapr_candidatefig.png", dpi = 300, height = 6, width = 10, units = "in", device = function(filename, width, height, ...) {
+  #  grDevices::png(filename, width = width, height = height, res = 300, type = "cairo", ...)
+  #})
   
-  print("done")
+  cat("done\n", file = "/scratch/espolston/afvaper_output.txt", append = TRUE)
