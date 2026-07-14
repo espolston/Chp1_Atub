@@ -192,10 +192,10 @@ saveRDS(all_chr_res, "/scratch/espolston/afvapr/all_chr_res.txt")
   cat("sigwin file done\n", file = "/scratch/espolston/afvaper_output.txt", append = TRUE)
   
   
-  significant_windows <- signif_eigen_windows(eigen_res,null_cutoffs[,"95%"])
-  saveRDS(significant_windows, file ="/scratch/espolston/afvapr/afvapr_sigwindows_95.txt")
-  significant_windows <- signif_eigen_windows(eigen_res,null_cutoffs[,"99%"])
-  saveRDS(significant_windows, file ="/scratch/espolston/afvapr/afvapr_sigwindows_99.txt")
+  significant_windows95 <- signif_eigen_windows(eigen_res,null_cutoffs[,"95%"])
+  saveRDS(significant_windows95, file ="/scratch/espolston/afvapr/afvapr_sigwindows_95.txt")
+  significant_windows99 <- signif_eigen_windows(eigen_res,null_cutoffs[,"99%"])
+  saveRDS(significant_windows99, file ="/scratch/espolston/afvapr/afvapr_sigwindows_99.txt")
   
   #------ Summarize Outliers -------
   
