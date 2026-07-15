@@ -40,7 +40,7 @@ fst_wc_avg <- fst_wc %>%
 #I've update POP# -> pop#, Pair_Env -> Pair_Env_final, and now HUDSON_FST -> wcfst_allscaf
 
 #using coords from https://docs.google.com/spreadsheets/d/1XN9sKfZL9NgFWdRhXZCtK0cyJifjuPaeXkcjWryU5K4/edit?gid=0#gid=0
-coords <- read_tsv("/Users/libbypolston/Desktop/Popcoordinates.tsv")
+coords <- read_tsv("/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Data/Popcoordinates.tsv")
 coords <- coords %>%
   rowwise() %>%
   mutate("Pair_Env_final" = paste("pair_", Pair, "_", Env, sep = "")) %>%
@@ -406,6 +406,69 @@ coord_cartesian(ylim = c(0, NA))  # floor y at 0
 p_ibd_overlay
 ggsave("/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/ibd_output/IBD_overlay.pdf", p_ibd_overlay, width = 6, height = 5)
 ggsave("/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/ibd_output/IBD_overlay.png", p_ibd_overlay, width = 6, height = 5, dpi = 300)
+
+# ── Plot 2a: IBD all env types overlaid ──────────────────────────────────────
+#cols <- c("Ag vs Ag" = "#60CEACFF", "Nat vs Nat" = "#382A54FF", "Ag vs Nat" = "#3497A9FF")
+p_all_overlay <- ggplot(fst, aes(x = Geo_km, y = wcfst_allscaf, color = comp_type)) +
+  geom_point(alpha = 0.4, size = 1.5) +
+  geom_smooth(method = "lm", formula = y ~ log(x), se = TRUE, linewidth = 0.9) +
+  scale_x_continuous(
+    trans  = "log",
+    breaks = c(1, 10, 50, 100, 500, 1000),
+    labels = c("1", "10", "50", "100", "500", "1000"),
+    limits = c(2, 1100)   # start at ~min data, no extrapolation left
+  ) +
+  coord_cartesian(ylim = c(0, NA)) +  # floor y at 0
+  #scale_colour_manual(values = cols, name = NULL) +
+  labs(x = "Geographic distance (km)",
+       y = expression(F[ST] / (1 - F[ST])),
+       title = "Isolation by Distance") +
+  theme_bw() +
+  theme(legend.position   = c(0.15, 0.85),
+        legend.background = element_blank(), 
+        axis.text = element_text(size = 15)) +
+  scale_x_continuous(
+    trans  = "log",
+    breaks = c(1, 10, 50, 100, 500, 1000),
+    labels = c("1", "10", "50", "100", "500", "1000"),
+    limits = c(2, 1100)   # start at ~min data, no extrapolation left
+  ) +
+  coord_cartesian(ylim = c(0, NA))  # floor y at 0
+p_all_overlay
+ggsave("/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/ibd_output/all_overlay.png", p_all_overlay, width = 6, height = 5, dpi = 300)
+
+# ── Plot 2b: IBD all env types overlaid BUT excluding ag-nat contrasts < 25 km apart ──────────────────────────────────────
+#exclusing these bc they are in the same enviro contrast and will effect our curve
+#cols <- c("Ag vs Ag" = "#60CEACFF", "Nat vs Nat" = "#382A54FF", "Ag vs Nat" = "#3497A9FF")
+nolow_fst <- fst %>%
+  filter(Geo_km >= 25)
+
+p_all_overlay_nolow <- ggplot(nolow_fst, aes(x = Geo_km, y = wcfst_allscaf, color = comp_type)) +
+  geom_point(alpha = 0.4, size = 1.5) +
+  geom_smooth(method = "lm", formula = y ~ log(x), se = TRUE, linewidth = 0.9) +
+  scale_x_continuous(
+    trans  = "log",
+    breaks = c(1, 10, 50, 100, 500, 1000),
+    labels = c("1", "10", "50", "100", "500", "1000"),
+    limits = c(2, 1100)   # start at ~min data, no extrapolation left
+  ) +
+  coord_cartesian(ylim = c(0, NA)) +  # floor y at 0
+  #scale_colour_manual(values = cols, name = NULL) +
+  labs(x = "Geographic distance (km)",
+       y = expression(F[ST] / (1 - F[ST])),
+       title = "Isolation by Distance") +
+  theme_bw() +
+  theme(legend.position   = c(0.15, 0.85),
+        legend.background = element_blank(), 
+        axis.text = element_text(size = 15)) +
+  scale_x_continuous(
+    trans  = "log",
+    breaks = c(1, 10, 50, 100, 500, 1000),
+    labels = c("1", "10", "50", "100", "500", "1000"),
+    limits = c(2, 1100)   # start at ~min data, no extrapolation left
+  ) +
+  coord_cartesian(ylim = c(0, NA))  # floor y at 0
+ggsave("/Users/libbypolston/Desktop/UChicago/Kreiner_lab/Coding/Rotation_Winter2025/Results/ibd_output/all_overlay_morethan25kmapart.png", p_all_overlay_nolow, width = 6, height = 5, dpi = 300)
 
 # ── Plot 3: IBE — within-pair Ag vs Nat Fst ──────────────────────────────────
 p_ibe <- ggplot(fst_within, aes(x = 1, y = Fst_lin)) +
