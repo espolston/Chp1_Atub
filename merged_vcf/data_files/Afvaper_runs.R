@@ -216,7 +216,7 @@ saveRDS(all_chr_res, "/scratch/espolston/afvapr/all_chr_res.txt")
     eig_parallel <- summarise_window_parallelism(window_id = significant_windows[[ev]],
                                                   eigen_res = eigen_res,
                                                   loading_cutoff = 0.2,
-                                                  eigenvector = 2)
+                                                  eigenvector = ev)
     write.table(eig_parallel, file = paste("/scratch/espolston/afvapr/afvapr_eig", ev, "_parallel.txt", sep = ""), quote = F, row.names = F)
   }
   cat("eig file done\n", file = "/scratch/espolston/afvaper_output.txt", append = TRUE)
