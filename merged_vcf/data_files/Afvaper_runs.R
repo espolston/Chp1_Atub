@@ -212,14 +212,13 @@ saveRDS(all_chr_res, "/scratch/espolston/afvapr/all_chr_res.txt")
   
   
   #For outliers on eigenvectors 2+ we have an additional eigenvalue_sum column that describes the sum of eigenvalues 1 + 2, as well as the individual eigenvalue 1 and eigenvalue 2 scores for every window. These tell us that most of these windows are exhibiting a signature closer to full-parallelism (large eigenvalue 1) rather than multi-parallelism (more balanced eigenvalue 1 + 2), which is expected for this simulation (these regions are around the focal 10 Mb fully parallel sweep).
-  eig2_parallel <- summarise_window_parallelism(window_id = significant_windows[[2]],
-                                                eigen_res = eigen_res,
-                                                loading_cutoff = 0.2,
-                                                eigenvector = 2)
-  # Show results
-  head(eig2_parallel)
-  
-  write.table(eig2_parallel, file = "/scratch/espolston/afvapr/afvapr_eig2_parallel.txt", quote = F, row.names = F)
+  for(ev in 2:17){
+    eig_parallel <- summarise_window_parallelism(window_id = significant_windows[[ev]],
+                                                  eigen_res = eigen_res,
+                                                  loading_cutoff = 0.2,
+                                                  eigenvector = 2)
+    write.table(eig_parallel, file = paste("/scratch/espolston/afvapr/afvapr_eig", ev, "_parallel.txt", sep = ""), quote = F, row.names = F)
+  }
   cat("eig file done\n", file = "/scratch/espolston/afvaper_output.txt", append = TRUE)
   
   #------ Explore candidate regions -------
