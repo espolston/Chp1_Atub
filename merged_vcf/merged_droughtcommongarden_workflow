@@ -64,13 +64,14 @@ sbatch H12_hapscan.sbatch
 ldrun.sbatch #analyzed LD decay and got window size for afvaper in chp1_mergedvcf.Rmd
 
 Afvaper.sbatch
-Afvaper_runs.R for AFvaper analyses
+Afvaper_runs.R #for AFvaper analyses
 
 #Looking at diversity plot and if ag-nat dif is dif then expected from AF matched null
 divperms.sbatch
 
 #xpehh and cmh overlap run sh on local for bedtools and then into chp1 rmd again
 xpehh_cmh_overlap.sh
+xpehh_pairsoverlap.sbatch #look at if pair specific hits overlap in 10kb windows bc not much snp overlap
 
 #Sampling map plotting
 MapPlotting_Figure1.R
