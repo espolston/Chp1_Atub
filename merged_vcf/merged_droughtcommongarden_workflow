@@ -75,3 +75,6 @@ xpehh_pairsoverlap.sbatch #look at if pair specific hits overlap in 10kb windows
 
 #Sampling map plotting
 MapPlotting_Figure1.R
+
+#maps of herbicide and land use at paired sites
+make_maps.R
